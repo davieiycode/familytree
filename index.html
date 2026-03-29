@@ -964,8 +964,13 @@
     <script>
         // CONFIGURATION: Enter your Google Client ID here to skip manual setup.
         const APP_CONFIG = {
-            googleClientId: "454611863216-5aeaass5e1l0uqos9amd98b32ebgouli.apps.googleusercontent.com" // Your personal Client ID
+            googleClientId: "454611863216-5aeaass5e1l0uqos9amd98b32ebgouli.apps.googleusercontent.com", // Your personal Client ID
+            defaultAppScriptUrl: "" // MASUKKAN URL APPS SCRIPT ANDA DI SINI
         };
+
+        function getEffectiveAppScriptUrl() {
+            return APP_CONFIG.defaultAppScriptUrl || localStorage.getItem('appscript_url');
+        }
 
         let editId = null;
         let currentUserId = localStorage.getItem('current_user_id') || "";
@@ -1122,12 +1127,15 @@
             
             const hasCid = !!getEffectiveClientId();
             const isLoggedInGoogle = document.getElementById('googleProfileContainer').style.display === 'flex';
-            const hasAppScript = !!localStorage.getItem('appscript_url');
+            const isLoggedInManual = !!localStorage.getItem('manual_user_id');
+            const isLoggedIn = isLoggedInGoogle || isLoggedInManual;
+            
+            const hasAppScript = !!getEffectiveAppScriptUrl();
             const user = getCurrentUser();
             const members = JSON.parse(localStorage.getItem('family_members') || '[]');
 
             // Stage 1: Login Wall (Global Requirement)
-            if (hasCid && !isLoggedInGoogle) {
+            if (hasCid && !isLoggedIn) {
                 authWall.style.display = 'flex';
                 setupWall.style.display = 'none';
                 app.style.display = 'none';
@@ -1143,7 +1151,7 @@
                 document.getElementById('setupPrompt').style.display = 'block';
             } 
             // Access Restricted (Logged in but not a member)
-            else if (isLoggedInGoogle && !user) {
+            else if (isLoggedIn && !user) {
                 authWall.style.display = 'flex';
                 setupWall.style.display = 'none';
                 app.style.display = 'none';
@@ -1166,7 +1174,7 @@
                 }
             }
             // Stage 2: Verification & Initial Sync (Mandatory Only for First Superadmin on Fresh System)
-            else if (isLoggedInGoogle && !hasAppScript && members.length <= 1 && user && user.role === 'superadmin') {
+            else if (isLoggedIn && !hasAppScript && members.length <= 1 && user && user.role === 'superadmin') {
                 authWall.style.display = 'none';
                 setupWall.style.display = 'flex';
                 app.style.display = 'none';
@@ -1266,7 +1274,7 @@
                     document.getElementById('currentUserSelect').disabled = true;
                     showToast('Superadmin ' + m.name + ' Teridentifikasi ✅', 'success');
                     logActivity('LOGIN', `Superadmin Masuk`);
-                } else if (members.length === 0 && !hasAppScript) {
+                } else if (members.length === 0 && !getEffectiveAppScriptUrl()) {
                     // System Bootstrap - Let them in as Guest and show the Setup prompt if they are an admin
                     setCurrentUser('');
                     showToast('Pohon belum terinisialisasi. Silakan hubungkan Cloud URL di menu konfigurasi.', 'info');
@@ -1314,9 +1322,9 @@
         }
 
         async function executeSync(strategy) {
-            let scriptUrl = document.getElementById('syncUrlInput').value.trim();
+            let scriptUrl = getEffectiveAppScriptUrl();
             if (!scriptUrl) {
-                showToast('⚠️ Harap masukkan URL Apps Script terlebih dahulu di kolom atas!', 'error');
+                showToast('⚠️ Harap masukkan URL Apps Script terlebih dahulu di menu konfigurasi!', 'error');
                 return;
             }
             
