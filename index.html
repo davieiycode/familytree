@@ -530,8 +530,18 @@
 </head>
 <body>
     <script src="https://accounts.google.com/gsi/client" onload="initGoogleLogin()" async defer></script>
+    <style>
+        /* Base isolation: Hide app structure until auth is resolved */
+        .app-container, .bg-blobs { display: none; }
+    </style>
+
     <div id="toast-container"></div>
-    <div class="bg-blobs">
+    <div id="authBlobs" class="bg-blobs" style="display:flex;"> <!-- Blobs for Login Wall -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <div id="mainBlobs" class="bg-blobs"> <!-- Blobs for Dashboard Card -->
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
         <div class="blob blob-3"></div>
@@ -609,7 +619,7 @@
             <div id="memberList" class="member-grid"></div>
         </section>
     <!-- Auth Wall Overlay (Stage 1) -->
-    <div id="authWall" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; overflow: hidden;">
+    <div id="authWall" style="display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; overflow: hidden;">
         <!-- Animated Background Elements -->
         <style>
             @keyframes pulseAuth {
@@ -1056,6 +1066,8 @@
             const authWall = document.getElementById('authWall');
             const setupWall = document.getElementById('setupWall');
             const app = document.querySelector('.app-container');
+            const authBlobs = document.getElementById('authBlobs');
+            const mainBlobs = document.getElementById('mainBlobs');
             
             const hasCid = !!getEffectiveClientId();
             const isLoggedInGoogle = document.getElementById('googleProfileContainer').style.display === 'flex';
@@ -1068,11 +1080,15 @@
                 authWall.style.display = 'flex';
                 setupWall.style.display = 'none';
                 app.style.display = 'none';
+                authBlobs.style.display = 'flex';
+                mainBlobs.style.display = 'none';
                 document.getElementById('setupPrompt').style.display = 'none';
             } else if (!hasCid) {
                 authWall.style.display = 'flex';
                 setupWall.style.display = 'none';
                 app.style.display = 'none';
+                authBlobs.style.display = 'flex';
+                mainBlobs.style.display = 'none';
                 document.getElementById('setupPrompt').style.display = 'block';
             } 
             // Stage 2: Verification & Initial Sync (If logged in but no cloud link)
@@ -1083,12 +1099,15 @@
                     authWall.style.display = 'flex';
                     setupWall.style.display = 'none';
                     app.style.display = 'none';
+                    authBlobs.style.display = 'flex';
+                    mainBlobs.style.display = 'none';
                     document.getElementById('setupPrompt').style.display = 'none';
-                    // Show error in auth wall
                 } else {
                     authWall.style.display = 'none';
                     setupWall.style.display = 'flex';
                     app.style.display = 'none';
+                    authBlobs.style.display = 'flex';
+                    mainBlobs.style.display = 'none';
                 }
             }
             // Stage 3: Dashboard (Full Access)
@@ -1096,6 +1115,8 @@
                 authWall.style.display = 'none';
                 setupWall.style.display = 'none';
                 app.style.display = 'grid';
+                authBlobs.style.display = 'none';
+                mainBlobs.style.display = 'flex';
             }
 
             if (document.getElementById('memberList')) renderMembers();
