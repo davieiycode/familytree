@@ -587,26 +587,24 @@
     <div id="setupWall" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0f172a; z-index: 8500; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; overflow: hidden;">
         <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(to bottom, #1e1b4b 0%, #0f172a 100%); opacity: 0.5;"></div>
         <div style="background: rgba(15,23,42,0.8); border: 2px solid rgba(99,102,241,0.3); backdrop-filter: blur(40px); border-radius: 48px; padding: 4rem 3rem; max-width: 580px; width: 100%; box-shadow: 0 60px 120px -20px rgba(0,0,0,1); position: relative; z-index: 1; border-top-color: var(--primary-light);">
-            <div style="width: 90px; height: 90px; background: rgba(99,102,241,0.1); border: 2px solid var(--primary); border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 2.5rem; box-shadow: 0 0 50px rgba(99,102,241,0.2);">
-                <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M7 7h.01"/><path d="M17 7h.01"/><path d="M7 17h.01"/><path d="M17 17h.01"/></svg>
+            <div style="width: 70px; height: 70px; background: rgba(99,102,241,0.1); border: 2px solid var(--primary); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: 0 0 30px rgba(99,102,241,0.1);">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M7 7h.01"/><path d="M17 7h.01"/><path d="M7 17h.01"/><path d="M17 17h.01"/></svg>
             </div>
-            <h2 style="color: white; font-size: 2.5rem; margin-bottom: 1rem; font-weight: 900; letter-spacing: -2px;">Selamat Datang!</h2>
-            <p style="color: var(--text-dim); margin-bottom: 3.5rem; font-size: 1.1rem; line-height: 1.6;">Langkah awal: Silakan scan **QR Code Library** keluarga Anda untuk menghubungkan data dari cloud.</p>
+            <h2 style="color: white; font-size: 2.2rem; margin-bottom: 0.5rem; font-weight: 900; letter-spacing: -1.5px;">Hubungkan Cloud ☁️</h2>
+            <p style="color: var(--text-dim); margin-bottom: 2rem; font-size: 0.95rem;">Arahkan kamera ke QR Code URL Apps Script keluarga Anda.</p>
             
-            <div style="margin-bottom: 2.5rem;">
-                <button onclick="startQRScanner('initialSyncUrl')" style="background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%); color: white; border: none; padding: 1.8rem; border-radius: 28px; font-weight: 800; font-size: 1.3rem; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px; transition: 0.4s; box-shadow: 0 20px 40px rgba(99,102,241,0.4); border-bottom: 4px solid rgba(0,0,0,0.2);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 30px 60px rgba(99,102,241,0.5)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 20px 40px rgba(99,102,241,0.4)'">
-                    <span>📷 Scan QR Code Sekarang</span>
-                </button>
+            <div style="margin-bottom: 2rem;">
+                <!-- Integrated Scanner -->
+                <div id="mainReader" style="width: 100%; border-radius: 24px; overflow: hidden; background: #000; min-height: 250px; border: 2px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 30px rgba(0,0,0,0.5);"></div>
             </div>
 
-            <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2rem;">
-                <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Input Manual (Opsional)</p>
-                <div style="display: flex; gap: 12px; align-items: stretch;">
-                    <input type="url" id="initialSyncUrl" placeholder="Tempel URL Cloud di sini..." style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); padding: 1.2rem; border-radius: 18px; color: white; font-size: 0.9rem; outline: none;">
-                    <button onclick="saveInitialSync()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 0 1.5rem; cursor: pointer; color: white; font-weight: 800;">Simpan</button>
+            <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
+                <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Input Manual URL</p>
+                <div style="display: flex; gap: 8px; align-items: stretch;">
+                    <input type="url" id="initialSyncUrl" placeholder="Tempel URL Cloud di sini..." style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); padding: 1rem; border-radius: 14px; color: white; font-size: 0.85rem; outline: none;">
+                    <button onclick="saveInitialSync()" style="background: var(--primary); border: none; border-radius: 14px; padding: 0 1.2rem; cursor: pointer; color: white; font-weight: 800; font-size: 0.8rem;">Simpan</button>
                 </div>
             </div>
-            <p style="margin-top: 2.5rem; font-size: 0.7rem; color: rgba(255,255,255,0.2); letter-spacing: 2px;">SECURE DATA LINK HUB</p>
         </div>
     </div>
     
@@ -1136,6 +1134,9 @@
                 app.style.display = 'none';
                 authBlobs.style.display = 'flex';
                 mainBlobs.style.display = 'none';
+                
+                // Auto-start scanner if on setup wall
+                if (!html5QrCode) startQRScanner('initialSyncUrl', 'mainReader');
             }
             // STEP 2: Identity Verification Gate
             else if (!isLoggedIn) {
@@ -1435,18 +1436,17 @@
         let html5QrCode = null;
         let qrTargetId = '';
 
-        window.startQRScanner = function(targetId) {
+        window.startQRScanner = function(targetId, containerId = 'reader') {
             qrTargetId = targetId;
-            document.getElementById('qrModal').style.display = 'flex';
+            if (containerId === 'reader') document.getElementById('qrModal').style.display = 'flex';
             
-            html5QrCode = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            html5QrCode = new Html5Qrcode(containerId);
+            const config = { fps: 15, qrbox: { width: 220, height: 220 } };
 
             html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
                 .catch(err => {
                     console.error(err);
-                    showToast('Gagal mengakses kamera!', 'error');
-                    stopQRScanner();
+                    if (containerId === 'reader') stopQRScanner();
                 });
         }
 
