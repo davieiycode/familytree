@@ -1160,7 +1160,11 @@
                         <div style="background: rgba(99,102,241,0.1); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; text-align:center;">
                             <p style="font-size: 0.8rem; color: var(--primary-light);">Cloud Terhubung. Menunggu sinkronisasi data pertama...</p>
                         </div>
-                        <button onclick="executeSync('pull')" style="width: 100%; background: var(--primary); color: white; border: none; padding: 1.2rem; border-radius: 12px; font-weight: 800; cursor: pointer;">Tarik Data Silsilah 📥</button>
+                        <button onclick="executeSync('pull')" style="width: 100%; background: var(--primary); color: white; border: none; padding: 1.2rem; border-radius: 12px; font-weight: 800; cursor: pointer; margin-bottom: 1rem;">Tarik Data Silsilah 📥</button>
+                        <div style="text-align:center; padding: 1rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                            <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 1rem;">Jika cloud ini baru/kosong, silakan buat Admin pertama:</p>
+                            <button onclick="bootstrapInitialAdmin()" style="width: 100%; background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.8rem; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">Buat Akun Administrator 🛠️</button>
+                        </div>
                     `;
                 }
             } 
@@ -1300,6 +1304,28 @@
             location.reload();
         }
 
+        window.bootstrapInitialAdmin = function() {
+            if (confirm('Cloud ini kosong. Ingin membuat akun Superadmin pertama untuk mengelola silsilah ini?')) {
+                let members = [];
+                const sAdmin = {
+                    id: 'admin-' + Date.now(),
+                    name: 'Family Admin',
+                    username: 'admin',
+                    password: 'admin',
+                    role: 'superadmin',
+                    gender: 'male',
+                    trahs: [], spouses: [], fathers: [], mothers: []
+                };
+                members.push(sAdmin);
+                localStorage.setItem('family_members', JSON.stringify(members));
+                localStorage.setItem('manual_user_id', sAdmin.id);
+                setCurrentUser(sAdmin.id);
+                showToast('Welcome! Username & Pass default: admin / admin', 'success', 5000);
+                logActivity('BOOTSTRAP', 'Inisialisasi Admin di Cloud Baru');
+                updateUserAuthUI();
+            }
+        }
+
         async function executeSync(strategy) {
             let scriptUrl = getEffectiveAppScriptUrl();
             if (!scriptUrl) {
@@ -1338,6 +1364,9 @@
                         showToast('Data lokal berhasil ditimpa dengan data Cloud! ⬇️', 'success');
                     } else {
                         showToast('Data Cloud kosong, membatalkan Pull.', 'info');
+                        if (JSON.parse(localStorage.getItem('family_members') || '[]').length === 0) {
+                            bootstrapInitialAdmin();
+                        }
                     }
                 } 
                 else if (strategy === 'merge') {
@@ -1386,7 +1415,7 @@
             }
         }
 
-        function showToast(message, type = 'success') {
+        function showToast(message, type = 'success', duration = 3000) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -1395,7 +1424,7 @@
             setTimeout(() => {
                 toast.style.animation = 'toastOut 0.4s forwards';
                 setTimeout(() => toast.remove(), 400);
-            }, 3000);
+            }, duration);
         }
 
         const form = document.getElementById('biodataForm');
