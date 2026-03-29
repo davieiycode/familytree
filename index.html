@@ -1097,14 +1097,28 @@
                 mainBlobs.style.display = 'none';
                 document.getElementById('setupPrompt').style.display = 'block';
             } 
-            // Access Restricted (Email not found in members)
+            // Access Restricted (Logged in but not a member)
             else if (isLoggedInGoogle && !user) {
                 authWall.style.display = 'flex';
                 setupWall.style.display = 'none';
                 app.style.display = 'none';
                 authBlobs.style.display = 'flex';
                 mainBlobs.style.display = 'none';
+                // Hide setup prompt for uninvited guests
                 document.getElementById('setupPrompt').style.display = 'none';
+                
+                // Show specific lock message
+                const card = authWall.querySelector('div[style*="background: rgba(255,255,255,0.02)"]');
+                if (card) {
+                    let existingMsg = document.getElementById('accessDeniedMsg');
+                    if (!existingMsg) {
+                        existingMsg = document.createElement('div');
+                        existingMsg.id = 'accessDeniedMsg';
+                        existingMsg.style = "margin-top: 1.5rem; color: #f43f5e; font-size: 0.9rem; font-weight: 700; background: rgba(244,63,94,0.1); padding: 1rem; border-radius: 12px; border: 1px solid rgba(244,63,94,0.2); animation: fadeIn 0.4s ease;";
+                        existingMsg.innerHTML = "🚫 Akses Terbatas: Email Anda belum terdaftar di silsilah ini. Hubungi Superadmin untuk mengundang Anda.";
+                        card.appendChild(existingMsg);
+                    }
+                }
             }
             // Stage 2: Verification & Initial Sync (Mandatory Only for First Superadmin on Fresh System)
             else if (isLoggedInGoogle && !hasAppScript && members.length === 1 && user.role === 'superadmin') {
