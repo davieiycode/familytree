@@ -657,6 +657,10 @@
                                         <label>Telepon</label>
                                         <input type="text" id="phone" placeholder="0812...">
                                     </div>
+                                    <div class="input-group">
+                                        <label>Jabatan Keluarga</label>
+                                        <input type="text" id="familyRole" placeholder="Contoh: Ketua Trah, Sesepuh...">
+                                    </div>
                                     <div class="input-group" id="roleGroup" style="display:none; grid-column: 1 / -1;">
                                         <label style="color:var(--primary-light);">Akses Sistem (Khusus Superadmin)</label>
                                         <select id="userRole" style="background: rgba(99,102,241,0.1); border-color: var(--primary);">
@@ -1150,6 +1154,7 @@
             document.getElementById('phone').value = m.phone || '';
             document.getElementById('email').value = m.email || '';
             document.getElementById('address').value = m.address || '';
+            document.getElementById('familyRole').value = m.familyRole || '';
 
             // Handle repeaters
             ['trahList', 'fatherList', 'motherList', 'spouseList'].forEach(id => {
@@ -1212,6 +1217,7 @@
                 email: document.getElementById('email').value.trim(),
                 address: document.getElementById('address').value.trim(),
                 trahs: Array.from(document.querySelectorAll('.tr-name')).map(el => el.value.trim()).filter(Boolean),
+                familyRole: document.getElementById('familyRole').value.trim(),
                 fathers: Array.from(document.querySelectorAll('.f-name')).map(el => ({ name: el.value.trim() })).filter(x => x.name),
                 mothers: Array.from(document.querySelectorAll('.m-name')).map(el => ({ name: el.value.trim() })).filter(x => x.name),
                 spouses: Array.from(document.querySelectorAll('.s-name')).map((el, i) => ({ 
@@ -1280,8 +1286,12 @@
                         ${m.photo ? `<img src="${m.photo}" style="width:100%; height:100%; object-fit:cover;">` : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`}
                     </div>
                     <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px;">${m.name}</h2>
-                    <div style="display: inline-block; padding: 4px 16px; border-radius: 100px; background: ${m.gender === 'male' ? 'rgba(99,102,241,0.1)' : 'rgba(244,63,94,0.1)'}; color: ${m.gender === 'male' ? 'var(--primary-light)' : 'var(--accent)'}; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.05);">
-                        ${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'}
+                    <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 1.5rem;">
+                        <div style="display: inline-block; padding: 4px 16px; border-radius: 100px; background: ${m.gender === 'male' ? 'rgba(99,102,241,0.1)' : 'rgba(244,63,94,0.1)'}; color: ${m.gender === 'male' ? 'var(--primary-light)' : 'var(--accent)'}; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.05);">
+                            ${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'}
+                        </div>
+                        ${m.role && m.role !== 'client' ? `<div style="display: inline-block; padding: 4px 16px; border-radius: 100px; background: rgba(16, 185, 129, 0.1); color: var(--success); font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2);">${m.role.toUpperCase()}</div>` : ''}
+                        ${m.familyRole ? `<div style="display: inline-block; padding: 4px 16px; border-radius: 100px; background: rgba(99, 102, 241, 0.1); color: var(--primary-light); font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(99, 102, 241, 0.2);">${m.familyRole}</div>` : ''}
                     </div>
                 </div>
 
@@ -1319,89 +1329,6 @@
                 </div>
             `;
             document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        function populateRepeater(containerId, prefix, dataList, valueKey1, valueKey2, selectClass) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            const list = (dataList || []).filter(item => item && item[valueKey1] && item[valueKey1].trim() !== '');
-            if (list.length === 0) {
-                addItem(containerId, prefix);
-                return;
-            }
-            list.forEach(item => {
-                addItem(containerId, prefix);
-                const inputs = container.querySelectorAll(`.${prefix}-name`);
-                inputs[inputs.length - 1].value = item[valueKey1] || '';
-                const selects = container.querySelectorAll(`.${selectClass}`);
-                if(selects[selects.length - 1]) {
-                    selects[selects.length - 1].value = item[valueKey2] || '';
-                }
-            });
-        }
-
-        function editMember(id) {
-            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
-            const m = members.find(x => x.id === id);
-            if (!m) return;
-            
-            editId = id;
-            in_name.value = m.name;
-            document.querySelector(`input[name="gender"][value="${m.gender}"]`).checked = true;
-            in_dob.value = m.dob || '';
-            in_pob.value = m.pob || '';
-            lifeStatus.value = m.status;
-            deathDetailsGroup.style.display = m.status === 'deceased' ? 'grid' : 'none';
-            in_dod.value = m.dod || '';
-            in_pod.value = m.pod || '';
-            in_phone.value = m.phone || '';
-            in_email.value = m.email || '';
-            in_address.value = m.address || '';
-            document.getElementById('bio').value = m.bio || '';
-
-            if (m.photo) {
-                document.getElementById('iconPreview').innerHTML = `<img src="${m.photo}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                document.getElementById('uploadText').textContent = 'Foto Terpilih';
-            } else {
-                document.getElementById('iconPreview').innerHTML = '👤';
-                document.getElementById('uploadText').textContent = 'Klik untuk pasang foto anggota';
-            }
-            
-            populateRepeater('fatherList', 'f', m.fathers, 'name', 'type', 'f-type');
-            populateRepeater('motherList', 'm', m.mothers, 'name', 'type', 'm-type');
-            populateRepeater('spouseList', 's', m.spouses, 'name', 'status', 's-status');
-
-            // Populate Trah
-            const tContainer = document.getElementById('trahList');
-            tContainer.innerHTML = '';
-            if (m.trahs && m.trahs.length > 0) {
-                m.trahs.forEach(t => {
-                    addItem('trahList', 'tr');
-                    const inputs = tContainer.querySelectorAll('.tr-name');
-                    inputs[inputs.length - 1].value = t;
-                });
-            } else {
-                addItem('trahList', 'tr');
-            }
-            
-            document.getElementById('roleGroup').style.display = getRole() === 'superadmin' ? 'block' : 'none';
-            document.getElementById('userRole').value = m.role || 'client';
-            
-            document.getElementById('formTitle').textContent = 'Edit Profil Anggota';
-            form.querySelector('.btn-submit').textContent = 'Update Portfolio Keluarga';
-            document.getElementById('formOverlay').style.display = 'block';
-        }
-
-        function deleteMember(id) {
-            if (confirm('Hapus anggota ini dari silsilah keluarga?')) {
-                let members = JSON.parse(localStorage.getItem('family_members') || '[]');
-                members = members.filter(m => m.id !== id);
-                localStorage.setItem('family_members', JSON.stringify(members));
-                renderMembers();
-                if (document.getElementById('treeOverlay').style.display === 'flex') {
-                    initTree();
-                }
-            }
         }
 
         function renderMembers() {
@@ -1485,8 +1412,14 @@
                             ${m.photo ? `<img src="${m.photo}" style="width:100%; height:100%; object-fit:cover;">` : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`}
                         </div>
                         <div style="overflow: hidden;">
-                            <div style="font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 2px;">${m.name}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-dim); font-weight: 500;">${m.dob ? new Date(m.dob).getFullYear() : 'Unknown'} ${calculateAgeString(m)}${m.status === 'deceased' ? ' — Wafat' : ''}</div>
+                            <div style="font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 2px; display: flex; align-items: center; gap: 8px;">
+                                ${m.name}
+                                ${m.role && (m.role === 'superadmin' || m.role === 'admin') ? `<span title="Akses: ${m.role}" style="font-size: 0.6rem; color: ${m.role==='superadmin'?'#818cf8':'#f43f5e'};">★</span>` : ''}
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-dim); font-weight: 500;">
+                                ${m.familyRole ? `<span style="color: var(--primary-light);">${m.familyRole} • </span>` : ''}
+                                ${m.dob ? new Date(m.dob).getFullYear() : 'Unknown'} ${calculateAgeString(m)}${m.status === 'deceased' ? ' — Wafat' : ''}
+                            </div>
                             <div style="display:flex; gap:4px; margin-top:6px; flex-wrap:wrap;">
                                 ${m.trahs ? m.trahs.slice(0,2).map(t => {
                                     const canViewTrah = getRole() === 'superadmin' || getRole() === 'admin' || currentUserId == m.id;
