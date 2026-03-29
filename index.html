@@ -1108,18 +1108,6 @@
             }, 3000);
         }
 
-        function openForm() {
-            editId = null;
-            form.reset();
-            document.getElementById('formTitle').textContent = 'Tambah Anggota';
-            deathDetailsGroup.style.display = 'none';
-            document.getElementById('formOverlay').style.display = 'block';
-        }
-
-        function closeForm() {
-            document.getElementById('formOverlay').style.display = 'none';
-        }
-
         const form = document.getElementById('biodataForm');
         // Global UI variable definitions (only once)
         const biodataForm = document.getElementById('biodataForm');
@@ -1185,6 +1173,7 @@
             biodataForm.reset();
             document.getElementById('formTitle').textContent = 'Tambah Anggota';
             deathDetailsGroup.style.display = 'none';
+            // Show Role selection based on authorization
             const canManageRoles = getRole() === 'superadmin' || getRole() === 'admin';
             document.getElementById('roleGroup').style.display = canManageRoles ? 'block' : 'none';
             document.getElementById('roleClient').checked = true;
@@ -1220,6 +1209,10 @@
             const rVal = m.role || 'client';
             const rInput = document.querySelector(`input[name="sysRole"][value="${rVal}"]`);
             if (rInput) rInput.checked = true;
+
+            // Show Role selection based on authorization
+            const canManageRoles = getRole() === 'superadmin' || getRole() === 'admin';
+            document.getElementById('roleGroup').style.display = canManageRoles ? 'block' : 'none';
 
             // Handle repeaters
             ['trahList', 'fatherList', 'motherList', 'spouseList'].forEach(id => {
