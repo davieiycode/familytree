@@ -1,2685 +1,1766 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-  <title>Silsilah Keluarga</title>
-  <meta name="theme-color" content="#dce8ff">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Silsilah">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" id="pwa-manifest">
-  <style>
-    :root {
-      --bl: #007AFF;
-      --bl-l: rgba(0, 122, 255, .13);
-      --bl-m: rgba(0, 122, 255, .25);
-      --red: #FF3B30;
-      --grn: #34C759;
-      --org: #FF9500;
-      --t1: #1C1C1E;
-      --t2: #3A3A3C;
-      --t3: #6C6C70;
-      --t4: #8E8E93;
-      --t5: #AEAEB2;
-      --sep: rgba(60, 60, 67, .18);
-      --sep2: rgba(60, 60, 67, .09);
-      --g1: rgba(255, 255, 255, .52);
-      --g2: rgba(255, 255, 255, .34);
-      --gb: rgba(255, 255, 255, .72);
-      --gs: rgba(255, 255, 255, .85);
-      --blur: blur(26px) saturate(1.8);
-      --blur2: blur(18px) saturate(1.6);
-      --sh1: 0 2px 14px rgba(0, 0, 0, .08);
-      --sh2: 0 8px 36px rgba(0, 0, 0, .11);
-      --r: 16px;
-      --dur: .22s;
-      --ease: cubic-bezier(.4, 0, .2, 1);
-      --mnb: #d7e6ff;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent
-    }
-
-    html,
-    body {
-      height: 100%;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif
-    }
-
-    body {
-      color: var(--t1);
-      background: var(--mnb);
-      display: flex;
-      flex-direction: column;
-      height: 100dvh
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse 82% 56% at 6% 0%, rgba(120, 190, 255, .65) 0%, transparent 55%),
-        radial-gradient(ellipse 60% 50% at 94% 5%, rgba(190, 150, 255, .58) 0%, transparent 50%),
-        radial-gradient(ellipse 70% 55% at 90% 94%, rgba(255, 160, 195, .52) 0%, transparent 55%),
-        radial-gradient(ellipse 64% 54% at 4% 90%, rgba(150, 225, 195, .52) 0%, transparent 55%),
-        radial-gradient(ellipse 54% 54% at 50% 50%, rgba(210, 225, 255, .40) 0%, transparent 65%),
-        #dce8ff
-    }
-
-    /* ── layout ── */
-    .hd {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: calc(env(safe-area-inset-top, 0px) + 11px) 14px 11px;
-      background: var(--g1);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      border-bottom: 1px solid var(--gb);
-      box-shadow: var(--sh1);
-      position: relative;
-      z-index: 20
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 9px
-    }
-
-    .brand-i {
-      line-height: 1;
-      display: flex;
-      align-items: center
-    }
-
-    .brand-i svg {
-      width: 28px;
-      height: 28px;
-      color: var(--bl)
-    }
-
-    .brand-n {
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: -.3px;
-      color: var(--t1)
-    }
-
-    .brand-s {
-      font-size: .62rem;
-      color: var(--t4);
-      letter-spacing: .2px;
-      margin-top: 1px
-    }
-
-    .hacts {
-      display: flex;
-      gap: 7px;
-      align-items: center
-    }
-
-    .hbtn {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 1px solid var(--gb);
-      background: var(--g2);
-      backdrop-filter: var(--blur2);
-      -webkit-backdrop-filter: var(--blur2);
-      color: var(--bl);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all var(--dur) var(--ease);
-      flex-shrink: 0
-    }
-
-    .hbtn:active {
-      transform: scale(.9);
-      background: var(--bl-m)
-    }
-
-    .hbtn svg {
-      width: 17px;
-      height: 17px
-    }
-
-    .spill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: var(--g1);
-      border: 1px solid var(--gb);
-      border-radius: 20px;
-      padding: 5px 11px;
-      font-size: .7rem;
-      font-weight: 500;
-      color: var(--t3);
-      cursor: pointer;
-      backdrop-filter: var(--blur2);
-      -webkit-backdrop-filter: var(--blur2)
-    }
-
-    .sdot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--t5);
-      transition: background .3s;
-      flex-shrink: 0
-    }
-
-    .sdot.ok {
-      background: var(--grn)
-    }
-
-    .sdot.syn {
-      background: var(--org);
-      animation: p .8s infinite
-    }
-
-    .sdot.err {
-      background: var(--red)
-    }
-
-    @keyframes p {
-
-      0%,
-      100% {
-        opacity: 1
-      }
-
-      50% {
-        opacity: .3
-      }
-    }
-
-    .main {
-      flex: 1;
-      overflow: hidden;
-      position: relative
-    }
-
-    .view {
-      position: absolute;
-      inset: 0;
-      display: none;
-      flex-direction: column;
-      overflow: hidden
-    }
-
-    .view.active {
-      display: flex
-    }
-
-    /* ── nav ── */
-    .bnav {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, .62);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      border: 1px solid var(--gb);
-      padding: 8px;
-      border-radius: 32px;
-      display: flex;
-      gap: 4px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, .15);
-      z-index: 100;
-      min-width: 200px
-    }
-
-    .nt {
-      border: none;
-      background: none;
-      display: flex;
-      align-items: center;
-      padding: 10px 18px;
-      cursor: pointer;
-      color: var(--t4);
-      font-size: 14px;
-      font-weight: 600;
-      transition: all var(--dur) var(--ease);
-      border-radius: 24px;
-      gap: 8px
-    }
-
-    .nt svg {
-      width: 22px;
-      height: 22px
-    }
-
-    .nt span {
-      display: none;
-      white-space: nowrap
-    }
-
-    .nt.active {
-      color: var(--bl);
-      background: rgba(0, 122, 255, .1)
-    }
-
-    .nt.active span {
-      display: inline
-    }
-
-    /* ── tag system ── */
-    .tags-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 8px 0
-    }
-
-    .tag-c {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 5px 10px;
-      background: var(--bl-l);
-      color: var(--bl);
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: default
-    }
-
-    .tag-c.sel {
-      background: var(--bl);
-      color: #fff
-    }
-
-    .tag-del {
-      cursor: pointer;
-      opacity: .6;
-      display: flex;
-      align-items: center;
-      font-size: 14px
-    }
-
-    .tag-del:hover {
-      opacity: 1
-    }
-
-    .tag-pick {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border: 1px solid var(--gb);
-      border-radius: 12px;
-      font-size: 12px;
-      color: var(--t4);
-      cursor: pointer;
-      transition: all .15s
-    }
-
-    .tag-pick:active {
-      background: var(--bl-l);
-      color: var(--bl)
-    }
-
-    /* ── trainee tag ── */
-    .tag-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 10px;
-      background: var(--bl-l);
-      color: var(--bl);
-      border-radius: 8px;
-      font-size: .72rem;
-      font-weight: 700;
-      margin: 2px
-    }
-
-    .sync-time {
-      font-size: .65rem;
-      color: var(--t5);
-      margin-top: 2px
-    }
-
-    /* ── tree viewport ── */
-    #tvp {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-      cursor: grab;
-      touch-action: none;
-      background-image: radial-gradient(rgba(0, 0, 0, .04) 1px, transparent 0);
-      background-size: 24px 24px
-    }
-
-    #tvp.grab {
-      cursor: grabbing
-    }
-
-    /* ── node (Famillio style) ── */
-    .pn {
-      position: absolute;
-      width: 200px;
-      height: 76px;
-      border-radius: 20px;
-      cursor: pointer;
-      user-select: none;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: var(--blur2);
-      -webkit-backdrop-filter: var(--blur2);
-      border: 1.5px solid var(--gb);
-      box-shadow: var(--sh1);
-      transition: all .24s var(--ease);
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      padding: 12px;
-      gap: 12px;
-      overflow: visible;
-    }
-
-    .pn:active { transform: scale(.96) }
-
-    .pn.sel {
-      border: 2px solid var(--bl);
-      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15), var(--sh2);
-      background: #fff;
-    }
-
-    .pav {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: #f2f2f7;
-      overflow: hidden;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      border: 2px solid #fff;
-    }
-
-    .pav img { width: 100%; height: 100%; object-fit: cover; }
-    .pn:hover .pav img { transform: scale(1.05) }
-
-    .pav-i { width: 32px; height: 32px; color: rgba(0, 0, 0, 0.08) }
-
-    .pin {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      text-align: left;
-      padding: 0;
-      background: transparent;
-      min-width: 0;
-    }
-
-    .pname {
-      font-size: .92rem;
-      font-weight: 750;
-      color: var(--t1);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 2px;
-    }
-
-    .pdts {
-      font-size: .68rem;
-      color: var(--t4);
-      font-weight: 500;
-    }
-
-    .pft {
-      position: absolute;
-      right: 12px;
-      top: 12px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .pn.male { 
-      background: linear-gradient(180deg, #f0f7ff 0%, #e1effe 100%); 
-      border: 1.5px solid rgba(0, 122, 255, 0.25);
-      box-shadow: 0 4px 14px rgba(0, 122, 255, 0.08), inset 0 0 0 1px rgba(255,255,255,0.7);
-    }
-    .pn.female { 
-      background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%); 
-      border: 1.5px solid rgba(255, 45, 85, 0.25);
-      box-shadow: 0 4px 14px rgba(255, 45, 85, 0.08), inset 0 0 0 1px rgba(255,255,255,0.7);
-    }
-    .pn.male .pft { background: #007AFF; box-shadow: 0 0 8px rgba(0, 122, 255, 0.4); }
-    .pn.female .pft { background: #FF2D55; box-shadow: 0 0 8px rgba(255, 45, 85, 0.4); }
-
-    /* ── empty ── */
-    .empty {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 40px 24px;
-      text-align: center;
-      flex: 1
-    }
-
-    .ei {
-      font-size: 3rem;
-      opacity: .37
-    }
-
-    .et {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--t2)
-    }
-
-    .es {
-      font-size: .82rem;
-      color: var(--t4);
-      line-height: 1.55
-    }
-
-    .ebt {
-      margin-top: 6px;
-      background: var(--bl);
-      color: #fff;
-      border: none;
-      border-radius: 22px;
-      padding: 10px 26px;
-      font-size: .88rem;
-      font-weight: 500;
-      cursor: pointer
-    }
-
-    .ebt:active {
-      opacity: .85
-    }
-
-    /* ── list cards ── */
-    .lhd {
-      flex-shrink: 0;
-      padding: 10px 14px 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between
-    }
-
-    .lttl {
-      font-size: .92rem;
-      font-weight: 600;
-      color: var(--t2)
-    }
-
-    .lcnt {
-      background: var(--bl-l);
-      color: var(--bl);
-      font-size: .72rem;
-      font-weight: 600;
-      border-radius: 12px;
-      padding: 2px 10px
-    }
-
-    .lscr {
-      flex: 1;
-      overflow-y: auto;
-      padding: 4px 12px 80px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px
-    }
-
-    .mc {
-      background: var(--g1);
-      backdrop-filter: var(--blur2);
-      -webkit-backdrop-filter: var(--blur2);
-      border: 1px solid var(--gb);
-      border-radius: var(--r);
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      cursor: pointer;
-      box-shadow: var(--sh1);
-      transition: transform .14s;
-      flex-shrink: 0
-    }
-
-    .mc:active {
-      transform: scale(.98)
-    }
-
-    .mc-av {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: .9rem;
-      font-weight: 700;
-      color: #fff;
-      flex-shrink: 0;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .13)
-    }
-
-    .mc-av img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%
-    }
-
-    .avm {
-      background: linear-gradient(135deg, #4facfe, #007AFF)
-    }
-
-    .avf {
-      background: linear-gradient(135deg, #fa7fb5, #FF2D55)
-    }
-
-    .avo {
-      background: linear-gradient(135deg, #a8edea, #44b1c8)
-    }
-
-    .mc-i {
-      flex: 1;
-      min-width: 0
-    }
-
-    .mc-n {
-      font-size: .9rem;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis
-    }
-
-    .mc-s {
-      font-size: .72rem;
-      color: var(--t4);
-      margin-top: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis
-    }
-
-    .mc-a {
-      color: var(--t5);
-      font-size: .85rem;
-      flex-shrink: 0
-    }
-
-    /* ── button groups ── */
-    .btn-group {
-      display: flex;
-      background: var(--g2);
-      backdrop-filter: var(--blur2);
-      -webkit-backdrop-filter: var(--blur2);
-      border: 1px solid var(--gb);
-      border-radius: 14px;
-      overflow: hidden;
-      padding: 3px;
-      gap: 2px;
-      width: fit-content;
-      margin: 0 auto;
-      box-shadow: var(--sh1)
-    }
-
-    .btn-group .da {
-      max-width: unset;
-      flex: 1;
-      border: none;
-      background: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      border-radius: 10px;
-      height: 38px;
-      padding: 0 16px;
-      font-size: .8rem;
-      white-space: nowrap
-    }
-
-    .btn-group .da:active {
-      background: rgba(0, 0, 0, .05);
-      transform: none
-    }
-
-    .btn-group .da.pr {
-      background: var(--bl);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(0, 122, 255, .3)
-    }
-
-    .btn-group .da.rd {
-      color: var(--red)
-    }
-
-    .btn-group .da svg {
-      width: 16px;
-      height: 16px
-    }
-
-    /* ── gender segments ── */
-    .fseg {
-      display: flex;
-      background: rgba(60, 60, 67, .06);
-      padding: 3px;
-      border-radius: 12px;
-      gap: 2px;
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--sep2)
-    }
-
-    .fseg-b {
-      flex: 1;
-      border: none;
-      background: transparent;
-      padding: 9px 0;
-      font-size: .82rem;
-      font-weight: 600;
-      color: var(--t4);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      position: relative;
-      z-index: 2;
-      transition: color .2s
-    }
-
-    .fseg-b svg {
-      width: 16px;
-      height: 16px;
-      opacity: .7
-    }
-
-    .fseg-b.active {
-      color: var(--t1)
-    }
-
-    .fseg-b.active svg {
-      opacity: 1;
-      color: var(--bl)
-    }
-
-    .fseg::after {
-      content: '';
-      position: absolute;
-      top: 3px;
-      bottom: 3px;
-      left: 3px;
-      width: calc(50% - 4px);
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
-      z-index: 1;
-      transition: transform .25s var(--ease)
-    }
-
-    .fseg[data-sel="female"]::after {
-      transform: translateX(100%)
-    }
-
-    /* ── search ── */
-    .sbw {
-      flex-shrink: 0;
-      padding: 10px 12px 8px
-    }
-
-    .sb {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--g1);
-      backdrop-filter: var(--blur2);
-      -webkit-backdrop-filter: var(--blur2);
-      border: 1px solid var(--gb);
-      border-radius: 12px;
-      padding: 10px 14px
-    }
-
-    .sb svg {
-      width: 16px;
-      height: 16px;
-      color: var(--t4);
-      flex-shrink: 0
-    }
-
-    .sb input {
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: .92rem;
-      flex: 1;
-      color: var(--t1)
-    }
-
-    .sb input::placeholder {
-      color: var(--t5)
-    }
-
-    .sres {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 12px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px
-    }
-
-    /* ── settings ── */
-    .sscr {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px
-    }
-
-    .sgrp {
-      margin-bottom: 12px
-    }
-
-    .slbl {
-      font-size: .72rem;
-      font-weight: 600;
-      color: var(--t4);
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      padding: 0 4px;
-      margin-bottom: 6px
-    }
-
-    .ssect {
-      background: var(--g1);
-      backdrop-filter: var(--blur2);
-      -webkit-backdrop-filter: var(--blur2);
-      border: 1px solid var(--gb);
-      border-radius: var(--r);
-      overflow: hidden;
-      box-shadow: var(--sh1)
-    }
-
-    .sr {
-      display: flex;
-      align-items: center;
-      padding: 13px 14px;
-      border-bottom: 1px solid var(--sep2);
-      gap: 11px;
-      cursor: pointer;
-      transition: background .15s
-    }
-
-    .sr:last-child {
-      border-bottom: none
-    }
-
-    .sr:active {
-      background: rgba(0, 0, 0, .03)
-    }
-
-    .sr-i {
-      font-size: 1.1rem;
-      width: 24px;
-      text-align: center;
-      flex-shrink: 0
-    }
-
-    .sr-t {
-      flex: 1;
-      font-size: .88rem;
-      color: var(--t1)
-    }
-
-    .sr-s {
-      font-size: .72rem;
-      color: var(--t4);
-      margin-top: 1px
-    }
-
-    .sr-a {
-      color: var(--t4);
-      font-size: .82rem;
-      flex-shrink: 0
-    }
-
-    .gas-inp {
-      width: 100%;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: .82rem;
-      color: var(--t1);
-      font-family: inherit
-    }
-
-    .gas-inp::placeholder {
-      color: var(--t5)
-    }
-
-    .danger {
-      color: var(--red) !important
-    }
-
-    /* ── overlay / bottom sheet ── */
-    .ov {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .30);
-      z-index: 100;
-      display: none;
-      align-items: flex-end;
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px)
-    }
-
-    .ov.open {
-      display: flex
-    }
-
-    .bs {
-      background: var(--gs);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      border: 1px solid var(--gb);
-      border-radius: 24px 24px 0 0;
-      width: 100%;
-      max-height: 90dvh;
-      overflow-y: auto;
-      animation: su .28s var(--ease);
-      padding-bottom: env(safe-area-inset-bottom, 0px)
-    }
-
-    @keyframes su {
-      from {
-        transform: translateY(100%)
-      }
-
-      to {
-        transform: translateY(0)
-      }
-    }
-
-    .bh {
-      width: 36px;
-      height: 4px;
-      background: rgba(60, 60, 67, .2);
-      border-radius: 2px;
-      margin: 12px auto 0
-    }
-
-    /* ── detail sheet ── */
-    .dhd {
-      padding: 24px 20px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center
-    }
-
-    .dav {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #fff;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
-      margin-bottom: 16px
-    }
-
-    .dav img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%
-    }
-
-    .ddi {
-      margin-bottom: 20px
-    }
-
-    .dname {
-      font-size: 1.6rem;
-      font-weight: 800;
-      line-height: 1.15;
-      color: var(--t1);
-      letter-spacing: -.5px
-    }
-
-    .dsub {
-      font-size: .88rem;
-      color: var(--t4);
-      margin-top: 6px
-    }
-
-    .da {
-      flex: 1;
-      max-width: 120px;
-      height: 44px;
-      border-radius: 24px;
-      border: 1px solid var(--gb);
-      background: var(--g1);
-      backdrop-filter: var(--blur2);
-      -webkit-backdrop-filter: var(--blur2);
-      font-size: .82rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: var(--t1);
-      transition: all .15s
-    }
-
-    .da svg {
-      width: 18px;
-      height: 18px
-    }
-
-    .da:active {
-      transform: scale(.95);
-      background: var(--bl-l)
-    }
-
-    .da.pr {
-      background: var(--bl);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 4px 12px rgba(0, 122, 255, .25)
-    }
-
-    .da.rd {
-      color: var(--red)
-    }
-
-    .dsec {
-      padding: 24px 20px;
-      border-top: 1px solid var(--sep2)
-    }
-
-    .dstl {
-      font-size: .82rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--t4);
-      margin-bottom: 16px
-    }
-
-    .drow {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 16px
-    }
-
-    .dlbl {
-      color: var(--t4);
-      font-size: .74rem;
-      font-weight: 600
-    }
-
-    .dval {
-      color: var(--t1);
-      font-size: .92rem;
-      line-height: 1.4
-    }
-
-    .dlink {
-      color: var(--bl);
-      text-decoration: none
-    }
-
-    .rr {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: var(--g1);
-      border-radius: 16px;
-      border: 1px solid var(--gb);
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: transform .12s
-    }
-
-    .rr:active {
-      transform: scale(.97)
-    }
-
-    .rrav {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-      flex-shrink: 0;
-      overflow: hidden
-    }
-
-    .rrav img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%
-    }
-
-    .rrn {
-      font-size: .9rem;
-      color: var(--t1);
-      font-weight: 600;
-      flex: 1
-    }
-
-    .rry {
-      font-size: .74rem;
-      color: var(--t4)
-    }
-
-    /* ── form modal ── */
-    .fmod {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .35);
-      z-index: 200;
-      display: none;
-      align-items: flex-end;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px)
-    }
-
-    .fmod.open {
-      display: flex
-    }
-
-    .fs {
-      background: var(--gs);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      border: 1px solid var(--gb);
-      border-radius: 24px 24px 0 0;
-      width: 100%;
-      max-height: 93dvh;
-      display: flex;
-      flex-direction: column;
-      animation: su .28s var(--ease)
-    }
-
-    .fhd {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 14px 10px;
-      border-bottom: 1px solid var(--sep2);
-      flex-shrink: 0
-    }
-
-    .fttl {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--t1)
-    }
-
-    .fcls {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: rgba(60, 60, 67, .11);
-      border: none;
-      color: var(--t3);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem
-    }
-
-    .fbdy {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px
-    }
-
-    .fg {
-      display: flex;
-      flex-direction: column;
-      gap: 4px
-    }
-
-    .flbl {
-      font-size: .68rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      color: var(--t4)
-    }
-
-    .fi,
-    .fse,
-    .ftx {
-      background: rgba(255, 255, 255, .58);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--gb);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: .9rem;
-      color: var(--t1);
-      outline: none;
-      font-family: inherit;
-      width: 100%;
-      transition: border-color .2s
-    }
-
-    .fi:focus,
-    .fse:focus,
-    .ftx:focus {
-      border-color: var(--bl)
-    }
-
-    .ftx {
-      resize: vertical;
-      min-height: 68px
-    }
-
-    .fr2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px
-    }
-
-    /* photo upload */
-    .phr {
-      display: flex;
-      align-items: center;
-      gap: 12px
-    }
-
-    .phcircle {
-      width: 68px;
-      height: 68px;
-      border-radius: 20px;
-      background: #f2f2f7;
-      border: 1px solid var(--gb);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(0, 0, 0, .08);
-      flex-shrink: 0;
-      overflow: hidden
-    }
-
-    .phcircle svg {
-      width: 36px;
-      height: 36px
-    }
-
-    .phcircle img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%
-    }
-
-    .phbtns {
-      display: flex;
-      flex-direction: column;
-      gap: 5px
-    }
-
-    .phlbl {
-      display: inline-block;
-      padding: 7px 14px;
-      background: var(--bl-l);
-      color: var(--bl);
-      border-radius: 8px;
-      font-size: .78rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid var(--bl-m)
-    }
-
-    .phrm {
-      display: inline-block;
-      padding: 7px 14px;
-      background: rgba(255, 59, 48, .09);
-      color: var(--red);
-      border-radius: 8px;
-      font-size: .78rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid rgba(255, 59, 48, .20)
-    }
-
-    /* relation picker with search */
-    .rpick {
-      background: rgba(255, 255, 255, .46);
-      border: 1px solid var(--gb);
-      border-radius: 10px;
-      overflow: hidden
-    }
-
-    .rpick-sb {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--sep2)
-    }
-
-    .rpick-sb svg {
-      width: 14px;
-      height: 14px;
-      color: var(--t4);
-      flex-shrink: 0
-    }
-
-    .rpick-sb input {
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: .85rem;
-      flex: 1;
-      color: var(--t1);
-      font-family: inherit
-    }
-
-    .rpick-sb input::placeholder {
-      color: var(--t5)
-    }
-
-    .rpick-list {
-      max-height: 148px;
-      overflow-y: auto
-    }
-
-    .ri {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 8px 10px;
-      cursor: pointer;
-      transition: background .12s;
-      border-bottom: 1px solid var(--sep2)
-    }
-
-    .ri:last-child {
-      border-bottom: none
-    }
-
-    .ri:active {
-      background: var(--bl-l)
-    }
-
-    .ri input[type=checkbox] {
-      accent-color: var(--bl);
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      cursor: pointer
-    }
-
-    .ri label {
-      font-size: .85rem;
-      cursor: pointer;
-      flex: 1
-    }
-
-    .ri .ry {
-      font-size: .68rem;
-      color: var(--t4);
-      flex-shrink: 0
-    }
-
-    .ri-empty {
-      padding: 12px 10px;
-      font-size: .8rem;
-      color: var(--t4);
-      text-align: center
-    }
-
-    .rpick-sel {
-      font-size: .72rem;
-      color: var(--bl);
-      padding: 4px 10px;
-      background: var(--bl-l);
-      border-top: 1px solid var(--bl-m);
-      display: none
-    }
-
-    .rpick-sel.show {
-      display: block
-    }
-
-    .fft {
-      padding: 11px 14px;
-      display: flex;
-      gap: 8px;
-      border-top: 1px solid var(--sep2);
-      flex-shrink: 0
-    }
-
-    .bcan {
-      flex: 1;
-      padding: 11px;
-      border: 1px solid var(--sep);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .4);
-      font-family: inherit;
-      font-size: .88rem;
-      color: var(--t2);
-      cursor: pointer
-    }
-
-    .bsav {
-      flex: 2;
-      padding: 11px;
-      border: none;
-      border-radius: 12px;
-      background: var(--bl);
-      color: #fff;
-      font-family: inherit;
-      font-size: .88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity .15s
-    }
-
-    .bsav:active {
-      opacity: .85
-    }
-
-    .fab {
-      position: absolute;
-      bottom: 16px;
-      right: 14px;
-      width: 52px;
-      height: 52px;
-      background: var(--bl);
-      border: none;
-      border-radius: 50%;
-      color: #fff;
-      font-size: 1.5rem;
-      cursor: pointer;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 18px rgba(0, 122, 255, .42);
-      transition: transform .18s
-    }
-
-    .fab:active {
-      transform: scale(.91)
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%) translateY(8px);
-      background: rgba(26, 26, 30, .84);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      color: #fff;
-      padding: 9px 20px;
-      border-radius: 20px;
-      font-size: .82rem;
-      font-weight: 500;
-      z-index: 400;
-      opacity: 0;
-      transition: all .28s var(--ease);
-      pointer-events: none;
-      white-space: nowrap;
-      box-shadow: var(--sh2);
-      border: 1px solid rgba(255, 255, 255, .10)
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0)
-    }
-
-    ::-webkit-scrollbar {
-      width: 3px
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, .12);
-      border-radius: 2px
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Tree Biodata - Modern Genealogy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --bg-gradient: radial-gradient(circle at 0% 0%, #1e1b4b, #030014);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --glass-blur: blur(20px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1rem;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated Background Elements */
+        .bg-blobs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            background: var(--primary-glow);
+            filter: blur(100px);
+            border-radius: 50%;
+            animation: move 25s infinite alternate ease-in-out;
+        }
+
+        .blob-1 { width: 500px; height: 500px; top: -100px; left: -100px; opacity: 0.6; }
+        .blob-2 { width: 400px; height: 400px; bottom: -50px; right: -50px; background: rgba(244, 63, 94, 0.2); opacity: 0.4; }
+        .blob-3 { width: 300px; height: 300px; top: 40%; left: 60%; background: rgba(16, 185, 129, 0.15); opacity: 0.3; }
+
+        @keyframes move {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(100px, 50px) scale(1.1); }
+            100% { transform: translate(-50px, 100px) scale(0.95); }
+        }
+
+        /* Layout Container */
+        .app-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-areas: 
+                "header header"
+                "list list"
+                "form form";
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-areas: 
+                    "header"
+                    "list"
+                    "form";
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .preview-pane {
+                position: static;
+                margin-top: 2rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 0.5rem; }
+            header { padding: 1.5rem 0.5rem; }
+            .list-section, .main-form { padding: 1.5rem; border-radius: 20px; }
+            .section-header h3 { font-size: 1.1rem; }
+            .input-grid { grid-template-columns: 1fr; gap: 1rem; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        header {
+            grid-area: header;
+            text-align: center;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 1rem;
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Form Card */
+        .main-form {
+            grid-area: form;
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--card-border);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-content {
+            padding: 2.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-content { padding: 1.5rem; }
+        }
+
+        /* Form Section Grids */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 3rem 0 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .section-header:first-child { margin-top: 0; }
+
+        .section-header i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 10px;
+            color: var(--primary-light);
+            font-size: 1.2rem;
+            font-style: normal;
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group.full-width { grid-column: 1 / -1; }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea,
+        select {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 0.9rem 1.1rem;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            width: 100%;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            background: rgba(15, 23, 42, 0.6);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        /* Radio Buttons */
+        .radio-container {
+            display: flex;
+            gap: 1rem;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 0.4rem;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-option input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .radio-option input:checked + .radio-label {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Photo Upload */
+        .photo-picker {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: rgba(15, 23, 42, 0.3);
+            border: 2px dashed var(--card-border);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .photo-picker:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Repeater */
+        .repeater-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .repeater-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .repeater-item:last-child { margin-bottom: 0; }
+
+        .btn-add {
+            background: transparent;
+            color: var(--primary-light);
+            border: 1px solid var(--primary-light);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .btn-add:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-remove {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--accent);
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .btn-remove:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* List Section */
+        .list-section {
+            grid-area: list;
+            margin-top: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 32px;
+            padding: 2.5rem;
+        }
+
+        .member-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .member-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .member-card:hover {
+            background: rgba(255,255,255,0.06);
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-submit {
+            background: linear-gradient(to right, var(--primary), #4f46e5);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 18px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Tree Visualization Overlay */
+        #treeOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #020617;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            animation: slideUp 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .tree-header {
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+        }
+
+        #treeCanvas {
+            flex-grow: 1;
+            width: 100%;
+            cursor: grab;
+            overflow: hidden;
+        }
+
+        .tree-controls {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        .control-btn:hover { transform: scale(1.1); background: #4f46e5; }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            pointer-events: none;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            pointer-events: auto;
+            min-width: 280px;
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--accent); }
+        .toast.info { border-left: 4px solid var(--primary); }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(50px); }
+        }
+    </style>
 </head>
-
 <body>
-  <header class="hd">
-    <div class="brand">
-      <span class="brand-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M5 10h14M5 10v4M12 6v8M19 10v4" stroke-linecap="round"/><rect x="9" y="2" width="6" height="4" rx="1"/><circle cx="5" cy="16" r="2"/><circle cx="12" cy="16" r="2"/><circle cx="19" cy="16" r="2"/></svg></span>
-      <div>
-        <div class="brand-n">Silsilah Keluarga</div>
-        <div class="brand-s">Pohon keluargamu</div>
-      </div>
+    <script src="https://accounts.google.com/gsi/client" onload="initGoogleLogin()" async defer></script>
+    <div id="toast-container"></div>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
     </div>
-    <div class="hacts">
-      <div class="spill" id="spill" onclick="event.stopPropagation(); Sync.run()">
-        <div class="sdot" id="sdot"></div><span id="stxt">Lokal</span>
-      </div>
-    </div>
-  </header>
-  <main class="main">
-    <!-- Tree -->
-    <div id="vw-tree" class="view">
-      <div id="tvp">
-        <div id="tcanvas"><svg id="tsvg" style="pointer-events:none"></svg>
-          <div id="tnodes"></div>
-        </div>
-      </div>
-      <div id="t-empty" class="empty" style="display:none">
-        <div class="ei"><svg viewBox="0 0 24 24" style="width:64px;height:64px;opacity:.2" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M5 10h14M5 10v4M12 6v8M19 10v4" stroke-linecap="round"/><rect x="9" y="2" width="6" height="4" rx="1"/><circle cx="5" cy="16" r="2"/><circle cx="12" cy="16" r="2"/><circle cx="19" cy="16" r="2"/></svg></div>
-        <div class="et">Pohon Keluarga Kosong</div>
-        <div class="es">Tambahkan anggota pertama<br>untuk memulai silsilah</div>
-        <button class="ebt" onclick="App.openAdd()">＋ Tambah Anggota Pertama</button>
-      </div>
-      <div class="zbar">
-        <button class="zbtn" onclick="Tree.zoom(.18)" aria-label="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v8M8 12h8" stroke-linecap="round"/><circle cx="12" cy="12" r="10"/></svg></button>
-        <button class="zbtn" onclick="Tree.zoom(-.18)" aria-label="Zoom out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 12h8" stroke-linecap="round"/><circle cx="12" cy="12" r="10"/></svg></button>
-        <button class="zbtn" onclick="Tree.reset()" aria-label="Reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 8-4 4 4 4M8 12h8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10"/></svg></button>
-      </div>
-    </div>
-    <div id="vw-list" class="view active">
-      <div class="sbw" style="padding:10px 12px 6px">
-        <div class="sb">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="list-sin" placeholder="Cari nama atau trah…" oninput="App.renderList()" autocomplete="off">
-        </div>
-      </div>
-      <div style="padding:0 12px 10px">
-        <button class="da pr" style="width:100%;max-width:unset;height:48px;border-radius:14px" onclick="App.openAdd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg> Tambah Anggota</button>
-      </div>
-      <div class="lhd"><span class="lttl">Semua Anggota</span><span class="lcnt" id="lcnt">0</span></div>
-      <div class="lscr" id="litems"></div>
-      <div id="l-empty" class="empty" style="display:none">
-        <div class="ei"><svg viewBox="0 0 24 24" style="width:48px;height:48px;color:var(--t5)" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-        <div class="et">Belum Ada Anggota</div>
-      </div>
-    </div>
-    <!-- Settings -->
-    <div id="vw-settings" class="view">
-      <div class="sscr">
-        <div class="sgrp">
-          <div class="slbl">Google Sheets Sync</div>
-          <div class="ssect">
-            <div class="sr" style="flex-direction:column;align-items:flex-start;gap:6px;cursor:default">
-              <div style="font-size:.78rem;color:var(--t3);font-weight:500">Apps Script URL</div>
-              <input id="gas-url" class="gas-inp" placeholder="Paste URL deployment Apps Script di sini…"
-                oninput="Sync.saveUrl(this.value)">
-            </div>
-            <div class="sr" onclick="Sync.run()">
-              <span class="sr-i" style="color:var(--bl)"><svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <div>
-                <div class="sr-t">Tarik dari Google Sheets</div>
-                <div class="sr-s">Ambil data terbaru</div>
-              </div>
-              <span class="sr-a">›</span>
-            </div>
-            <div class="sr" onclick="Sync.push()">
-              <span class="sr-i" style="color:var(--bl)"><svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <div>
-                <div class="sr-t">Kirim ke Google Sheets</div>
-                <div class="sr-s">Push semua data lokal</div>
-              </div>
-              <span class="sr-a">›</span>
-            </div>
-          </div>
-        </div>
-        <div class="sgrp">
-          <div class="slbl">Data Lokal</div>
-          <div class="ssect">
-            <div class="sr" onclick="App.exportJSON()">
-              <span class="sr-i" style="color:var(--t3)"><svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <div>
-                <div class="sr-t">Ekspor JSON</div>
-                <div class="sr-s">Unduh backup</div>
-              </div><span class="sr-a">›</span>
-            </div>
-            <div class="sr" onclick="document.getElementById('imp-file').click()">
-              <span class="sr-i" style="color:var(--t3)"><svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(180 12 12)"/></svg></span>
-              <div>
-                <div class="sr-t">Impor JSON</div>
-                <div class="sr-s">Gabung dari backup</div>
-              </div><span class="sr-a">›</span>
-            </div>
-            <div class="sr" onclick="App.clearAll()">
-              <span class="sr-i" style="color:var(--red)"><svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round"/></svg></span>
-              <div class="danger">
-                <div class="sr-t">Hapus Semua Data</div>
-              </div><span class="sr-a" style="color:var(--red)">›</span>
-            </div>
-          </div>
-        </div>
-        <div class="sgrp">
-          <div class="slbl">Info</div>
-          <div class="ssect">
-            <div class="sr" style="cursor:default">
-              <span class="sr-i" style="color:var(--t4)"><svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01" stroke-linecap="round"/></svg></span>
-              <div>
-                <div class="sr-t" id="dinfo">Memuat…</div>
-                <div class="sr-s">Data tersimpan lokal di perangkat · v2.0</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-  <nav class="bnav">
-    <button class="nt active" data-v="list" onclick="App.setView('list',this)"> <svg id="i-list"
-        viewBox="0 0 24 24"></svg><span>Anggota</span> </button>
-    <button class="nt" data-v="settings" onclick="App.setView('settings',this)"><svg id="i-settings"
-        viewBox="0 0 24 24"></svg><span>Pengaturan</span></button>
-  </nav>
-  <!-- Detail sheet -->
-  <div class="ov" id="dov" onclick="if(event.target===this)Detail.close()">
-    <div class="bs">
-      <div class="bh"></div>
-      <div id="dbody"></div>
-    </div>
-  </div>
-  <!-- Form modal -->
-  <div class="fmod" id="fmod" onmousedown="if(event.target===this) Form.close()">
-    <div class="fs" onmousedown="event.stopPropagation()">
-      <div class="fhd">
-        <span class="fttl" id="fttl">Tambah Anggota</span>
-        <button class="fcls" style="pointer-events:auto" onclick="Form.close()"><svg
-            viewBox="0 0 24 24" style="width:20px;height:20px">${ICO.close}</svg></button>
-      </div>
-      <div class="fbdy" id="fbdy"></div>
-      <div class="fft" style="z-index:210">
-        <button class="bcan" onclick="event.stopPropagation(); Form.close()">Batal</button>
-        <button class="bsav" onclick="Form.save()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;margin-right:6px">${ICO.check}</svg> Simpan</button>
-      </div>
-    </div>
-  </div>
-  <input type="file" id="imp-file" accept=".json" style="display:none" onchange="App.handleImport(event)">
-  <div class="toast" id="toast"></div>
-  <!-- Setup overlay -->
-  <div class="ov" id="setup-ov" style="z-index:500; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px)">
-    <div class="bs" style="max-height:unset; border-radius:32px 32px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.15)">
-      <div class="bh"></div>
-      <div style="padding:28px 24px 34px">
-        <div style="font-size:2.5rem; margin-bottom:14px; color:var(--bl)"><svg viewBox="0 0 24 24" style="width:40px;height:40px" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div style="font-size:1.4rem; font-weight:800; letter-spacing:-.5px; color:var(--t1); margin-bottom:8px">
-          Konfigurasi Awal</div>
-        <p style="font-size:.9rem; color:var(--t4); line-height:1.5; margin-bottom:24px">
-          Aplikasi ini menggunakan Google Sheets sebagai pusat data. Silakan tempel URL Apps Script Anda untuk memulai
-          sinkronisasi.
-        </p>
-        <div class="fg" style="margin-bottom:24px">
-          <span class="flbl">Apps Script URL</span>
-          <input id="setup-gas-url" class="fi" style="background:var(--g1)"
-            placeholder="https://script.google.com/macros/s/..." oninput="Sync.saveUrl(this.value)">
-        </div>
-        <button class="bsav" style="width:100%; padding:14px; border-radius:16px; font-size:.95rem"
-          onclick="App.finishSetup()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;margin-right:6px">
-            <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Simpan & Sinkronkan</button>
-        <div style="margin-top:20px; text-align:center">
-          <span style="font-size:.74rem; color:var(--t5)">Data akan disimpan secara lokal sebelum disinkronkan.</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script>
-    'use strict';
 
-    /* ICONS */
-    const ICO = {
-      list: {
-        off: `<path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
-        on: `<path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>`
-      },
-      settings: {
-        off: `<circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" fill="none"/>`,
-        on: `<circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2.6" fill="none"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2.6" fill="none"/>`
-      },
-      user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/>',
-      tree: '<path d="M12 2v4M5 10h14M5 10v4M12 6v8M19 10v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="9" y="2" width="6" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="19" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/>',
-      plus: '<path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-      close: '<path d="m18 6-12 12M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-      check: '<path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
-      camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="4" fill="none" stroke="currentColor" stroke-width="2"/>',
-      save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M17 21v-8H7v8M7 3v5h8" fill="none" stroke="currentColor" stroke-width="2"/>',
-      edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" fill="none" stroke="currentColor" stroke-width="2"/>',
-      trash: '<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-      male: '<circle cx="10" cy="14" r="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 9l5-5M14 4h6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-      female: '<circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 15v7M8 18h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-      phone: `<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 .81 2.81.7A2 2 0 0 1 22 16.92z" fill="none" stroke="currentColor" stroke-width="2"/>`,
-      info: '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-      zoomIn: '<path d="M12 8v8M8 12h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>',
-      zoomOut: '<path d="M8 12h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>',
-      recenter: '<path d="m12 8-4 4 4 4M8 12h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>',
-      dot: '<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/>',
-      sync: '<path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
-      push: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
-      import: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(180 12 12)"/>',
-      export: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
-    };
+    <div class="app-container">
+        <header>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px;">
+                <div style="background: var(--primary); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 16px rgba(99,102,241,0.3);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 .5-5"/><path d="M16 22l-.5-5"/></svg>
+                </div>
+                <h1 style="font-size: 2.2rem; letter-spacing: -1.5px;">Family Tree</h1>
+            </div>
+            <p style="opacity: 0.6; font-weight: 500; font-size: 1.1rem; margin-bottom: 0.5rem;">Digital Heritage System <span style="margin: 0 8px; opacity: 0.3;">|</span> v2.6.ios</p>
+            <div style="margin-top: 10px; display:inline-flex; align-items:center; flex-wrap:wrap; justify-content:center; gap:12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0.4rem 0.8rem;">
+                <div style="display:flex; align-items:center;">
+                    <label style="font-size:0.75rem; color:var(--text-dim); margin-right:8px;">Mode Akses:</label>
+                    <select id="currentUserSelect" onchange="setCurrentUser(this.value)" style="background:transparent; border:none; color:white; font-size:0.85rem; outline:none; font-weight:700; cursor:pointer;">
+                        <option value="">Guest (Tamu)</option>
+                    </select>
+                    <span id="currentUserRoleBadge" style="margin-left: 8px; font-size:0.6rem; padding: 2px 8px; border-radius:12px; font-weight:800; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7);">GUEST</span>
+                </div>
+                
+                <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.1);"></div>
+                
+                <div id="googleBtnContainer" style="display:none; transform: scale(0.85); transform-origin: center;"></div>
+                <div id="googleProfileContainer" style="display:none; align-items:center; gap:8px;">
+                    <img id="gAvatar" src="" style="width:20px; height:20px; border-radius:50%;">
+                    <span id="gName" style="font-size:0.75rem; color:white;"></span>
+                    <button onclick="logoutGoogle()" style="background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.3); border-radius:6px; color:var(--accent); font-size:0.6rem; cursor:pointer; padding: 3px 8px;">Logout</button>
+                </div>
+            </div>
+        </header>
 
-    function setIcons(active) {
-      ['list', 'settings'].forEach(k => {
-        const el = document.getElementById('i-' + k);
-        if (el) el.innerHTML = ICO[k][k === active ? 'on' : 'off'];
-      });
-    }
+        <section class="list-section">
+            <div id="memberListHeader" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <h3 style="font-size: 1.8rem; font-weight: 800;">Daftar Anggota</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button id="btnSyncCloud" onclick="openSyncModal()" class="btn-submit" style="margin-top: 0; padding: 0.8rem 1.5rem; font-size: 0.9rem; background: rgba(255,255,255,0.1); width: auto; color: white;">
+                        <span style="margin-right:5px;">☁️</span> Sinkronisasi Cloud
+                    </button>
+                    <button id="btnAddMember" onclick="openForm()" class="btn-submit" style="margin-top: 0; padding: 0.8rem 1.5rem; font-size: 0.9rem; background: var(--primary); width: auto;">
+                        + Tambah Anggota
+                    </button>
+                </div>
+            </div>
 
-    /* ═══════════════════════════════════════════
-       DATABASE
-    ═══════════════════════════════════════════ */
-    const DB = (() => {
-      const KEY = 'silsilah_v2';
-      let d = { members: [], nextId: 1 };
+            <div id="searchFilterContainer" style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--card-border); margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+                <div style="position: relative; width: 100%;">
+                    <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); opacity: 0.5;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Cari nama, trah, email..." style="padding-left: 3.2rem; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <select id="filterGender" style="flex: 1; min-width: 150px; background: rgba(0,0,0,0.2);">
+                        <option value="all">Semua Gender</option>
+                        <option value="male">Laki-laki</option>
+                        <option value="female">Perempuan</option>
+                    </select>
+                    <select id="filterStatus" style="flex: 1; min-width: 150px; background: rgba(0,0,0,0.2);">
+                        <option value="all">Semua Status</option>
+                        <option value="alive">Hidup</option>
+                        <option value="deceased">Wafat</option>
+                    </select>
+                    <select id="filterTrah" style="flex: 1; min-width: 150px; background: rgba(0,0,0,0.2);">
+                        <option value="all">Semua Trah</option>
+                    </select>
+                </div>
+            </div>
 
-      function load() { try { const s = localStorage.getItem(KEY); if (s) d = JSON.parse(s); } catch (_) { } }
-      function save() { localStorage.setItem(KEY, JSON.stringify(d)); uiInfo(); }
-      function uiInfo() {
-        const el = document.getElementById('dinfo'); if (!el) return;
-        const b = (localStorage.getItem(KEY) || '').length;
-        el.textContent = `${d.members.length} anggota · ${(b / 1024).toFixed(1)} KB`;
-      }
-      function all() { return d.members; }
-      function get(id) { return d.members.find(m => m.id === id); }
-      function norm(a) {
-        return {
-          name: a.name || '', gender: a.gender || 'male',
-          birthDate: a.birthDate || '', birthPlace: a.birthPlace || '',
-          deathDate: a.deathDate || '', deathPlace: a.deathPlace || '',
-          phone: a.phone || '', address: a.address || '', bio: a.bio || '',
-          photo: a.photo || null, photoUrl: a.photoUrl || '',
-          trah: Array.isArray(a.trah) ? a.trah : (a.trah ? a.trah.split(',').map(x => x.trim()) : []),
-          parentIds: [...(a.parentIds || [])], spouseIds: [...(a.spouseIds || [])]
-        };
-      }
-      function syncSpouses(id, oldSps, newSps) {
-        (oldSps || []).forEach(sid => { const sp = get(sid); if (sp) sp.spouseIds = (sp.spouseIds || []).filter(x => x !== id); });
-        (newSps || []).forEach(sid => { const sp = get(sid); if (sp && !(sp.spouseIds || []).includes(id)) (sp.spouseIds = sp.spouseIds || []).push(id); });
-      }
-      function add(attrs) {
-        const m = { id: d.nextId++, ...norm(attrs) };
-        d.members.push(m);
-        syncSpouses(m.id, [], m.spouseIds);
-        save(); return m;
-      }
-      function update(id, attrs) {
-        const i = d.members.findIndex(m => m.id === id); if (i < 0) return;
-        const oldSps = [...(d.members[i].spouseIds || [])];
-        Object.assign(d.members[i], norm(attrs));
-        syncSpouses(id, oldSps, d.members[i].spouseIds);
-        save();
-      }
-      function remove(id) {
-        d.members.forEach(m => {
-          m.spouseIds = (m.spouseIds || []).filter(x => x !== id);
-          m.parentIds = (m.parentIds || []).filter(x => x !== id);
-        });
-        d.members = d.members.filter(m => m.id !== id);
-        save();
-      }
-      function children(id) { return d.members.filter(m => (m.parentIds || []).includes(id)); }
-      function siblings(id) {
-        const m = get(id); if (!m || !(m.parentIds || []).length) return [];
-        return d.members.filter(x => x.id !== id && (x.parentIds || []).some(p => (m.parentIds || []).includes(p)));
-      }
-      function replace(nd) { d = nd; save(); }
-      function raw() { return d; }
-      return { load, save, uiInfo, all, get, add, update, remove, children, siblings, replace, raw };
-    })();
+            <div id="memberList" class="member-grid"></div>
+        </section>
 
-    /* ═══════════════════════════════════════════
-       LAYOUT ENGINE
-    ═══════════════════════════════════════════ */
-    const Layout = (() => {
-      const NW = 180, NH = 70, HG = 30, VG = 80;
+        <!-- Form Modal Overlay -->
+        <div id="formOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 6, 23, 0.95); z-index: 1500; overflow-y: auto; padding: 0; backdrop-filter: blur(15px);">
+            <div style="max-width: 1200px; margin: 0 auto; min-height: 100vh; position: relative; padding: 1.5rem;">
+                <button onclick="closeForm()" class="btn-remove" style="position: sticky; top: 1rem; left: 100%; transform: translateX(-1rem); width: 44px; height: 44px; z-index: 20; background: rgba(244, 63, 94, 0.8); color: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">✕</button>
+                
+                <div id="formContainer" class="form-modal-layout">
+                    <main class="main-form">
+                        <div style="padding: 2.5rem 2.5rem 0 2.5rem;"><h2 id="formTitle" style="font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 800; line-height: 1.2;">Tambah Anggota Baru</h2></div>
+                        <div class="form-content">
+                            <form id="biodataForm">
+                                <datalist id="memberOptions"></datalist>
+                                <div class="section-header">
+                                    <i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></i>
+                                    <h3>Profil Dasar</h3>
+                                </div>
+                                <div class="input-grid">
+                                    <div class="full-width">
+                                        <div class="photo-picker" id="photoDropArea">
+                                            <span id="iconPreview" style="font-size: 2.5rem; margin-bottom: 0.5rem;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+                                            <p id="uploadText" style="font-weight: 600;">Klik untuk pasang foto</p>
+                                            <input type="file" id="photoInput" style="display: none;" accept="image/*">
+                                        </div>
+                                    </div>
+                                    <div class="input-group full-width">
+                                        <label>Nama Lengkap</label>
+                                        <input type="text" id="fullName" placeholder="Masukkan nama..." required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Gender</label>
+                                        <div class="radio-container">
+                                            <div class="radio-option">
+                                                <input type="radio" name="gender" value="male" checked>
+                                                <div class="radio-label">Laki-laki</div>
+                                            </div>
+                                            <div class="radio-option">
+                                                <input type="radio" name="gender" value="female">
+                                                <div class="radio-label">Perempuan</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Status</label>
+                                        <select id="lifeStatus">
+                                            <option value="alive">Hidup</option>
+                                            <option value="deceased">Wafat</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Telepon</label>
+                                        <input type="text" id="phone" placeholder="0812...">
+                                    </div>
+                                    <div class="input-group" id="roleGroup" style="display:none; grid-column: 1 / -1;">
+                                        <label style="color:var(--primary-light);">Akses Sistem (Khusus Superadmin)</label>
+                                        <select id="userRole" style="background: rgba(99,102,241,0.1); border-color: var(--primary);">
+                                            <option value="client">Client (Terbatas pada data sendiri)</option>
+                                            <option value="admin">Admin (Edit semua data, tanpa akses URL sync)</option>
+                                            <option value="superadmin">Superadmin (Akses Penuh)</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Email</label>
+                                        <input type="text" id="email" placeholder="email@domain.com">
+                                    </div>
+                                    <div class="input-group full-width">
+                                        <label>Alamat</label>
+                                        <textarea id="address" rows="2" placeholder="Alamat lengkap..."></textarea>
+                                    </div>
+                                    <div class="input-group full-width">
+                                        <label>Trah</label>
+                                        <div id="trahList" class="repeater-card">
+                                            <div class="repeater-item">
+                                                <input type="text" placeholder="Nama Trah" class="tr-name">
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-add" onclick="addItem('trahList', 'tr')">+ Tambah Trah</button>
+                                    </div>
+                                </div>
+                                <div class="section-header"><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></i><h3>Riwayat Hidup</h3></div>
+                                <div class="input-grid">
+                                    <div class="input-group">
+                                        <label>Tempat Lahir</label>
+                                        <input type="text" id="pob" placeholder="Kota lahir">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Tanggal Lahir</label>
+                                        <input type="date" id="dob">
+                                    </div>
+                                    <div id="deathDetailsGroup" style="display: none; grid-column: 1 / -1; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; background: rgba(244, 63, 94, 0.08); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(244, 63, 94, 0.2);">
+                                        <div class="input-group">
+                                            <label>Tanggal Wafat</label>
+                                            <input type="date" id="dod">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Tempat Wafat</label>
+                                            <input type="text" id="pod" placeholder="Kota wafat">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section-header"><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></i><h3>Relasi</h3></div>
+                                <div class="input-grid">
+                                    <div class="input-group">
+                                        <label>Ayah</label>
+                                        <div id="fatherList" class="repeater-card">
+                                            <div class="repeater-item">
+                                                <input type="text" placeholder="Nama Ayah" class="f-name" list="memberOptions">
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-add" onclick="addItem('fatherList', 'f')">+ Ayah</button>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Ibu</label>
+                                        <div id="motherList" class="repeater-card">
+                                            <div class="repeater-item">
+                                                <input type="text" placeholder="Nama Ibu" class="m-name" list="memberOptions">
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-add" onclick="addItem('motherList', 'm')">+ Ibu</button>
+                                    </div>
+                                    <div class="input-group full-width">
+                                        <label>Pasangan</label>
+                                        <div id="spouseList" class="repeater-card">
+                                            <div class="repeater-item">
+                                                <input type="text" placeholder="Nama Pasangan" class="s-name" list="memberOptions">
+                                                <select class="s-status" style="width: 120px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 4px;">
+                                                    <option value="current">Saat Ini</option>
+                                                    <option value="former">Mantan</option>
+                                                    <option value="deceased">Wafat</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-add" onclick="addItem('spouseList', 's')">+ Pasangan</button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-submit">Simpan Data</button>
+                            </form>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
 
-      function compute(members) {
-        if (!members.length) return {};
-        const map = {}; members.forEach(m => map[m.id] = m);
+    <!-- Tree View Modal -->
+    <div id="treeOverlay">
+        <div class="tree-header">
+            <div>
+                <h2 style="font-size: 1.5rem;">Visualisasi Pohon</h2>
+            </div>
+            <button onclick="closeTreeView()" class="btn-remove" style="width: auto; padding: 0.7rem 1.5rem;">Tutup ✕</button>
+        </div>
+        <div id="treeCanvas"></div>
+        <div class="tree-controls">
+            <button class="control-btn" onclick="zoomIn()">+</button>
+            <button class="control-btn" onclick="zoomOut()">−</button>
+        </div>
+    </div>
 
-        // 1. Assign generations (Ancestors negative, Descendants positive)
-        const gen = {};
-        let changed = true;
-        for (let p = 0; p < 50 && changed; p++) {
-          changed = false;
-          members.forEach(m => {
-            let g = gen[m.id], pids = (m.parentIds || []).filter(pid => map[pid]);
-            if (pids.length) {
-              const pgs = pids.map(pid => gen[pid]).filter(x => x != null);
-              if (pgs.length) g = Math.max(...pgs) + 1;
+    <!-- Detail Modal -->
+    <div id="detailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--card-border); border-radius: 24px; padding: 2.5rem; max-width: 500px; width: 90%; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+            <button onclick="document.getElementById('detailModal').style.display='none'" style="position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">✕</button>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+    <!-- Sync Modal -->
+    <div id="syncModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--card-border); border-radius: 24px; padding: 2.5rem; max-width: 450px; width: 90%; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+            <button onclick="document.getElementById('syncModal').style.display='none'" style="position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 50%; color: white; margin-top:0; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; text-align: center;">☁️ Sinkronisasi</h2>
+            <p style="text-align: center; color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">Kelola data Anda ke Cloud Server Google Apps Script.</p>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.8rem; color: var(--primary-light); margin-bottom: 0.5rem; font-weight: 600;">Google Apps Script URL (Web App):</label>
+                <input type="url" id="syncUrlInput" placeholder="https://script.google.com/macros/s/..." style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem 1rem; border-radius: 12px; color: white; font-size: 0.85rem; outline: none; transition: 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'; localStorage.setItem('appscript_url', this.value)">
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--primary-light); margin-bottom: 0.5rem; font-weight: 600;"><span>Google Client ID (Login Email)</span> <small style="color:var(--text-dim); font-weight:normal;">opsional</small></label>
+                <input type="text" id="gClientIdInput" placeholder="xxxx.apps.googleusercontent.com" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem 1rem; border-radius: 12px; color: white; font-size: 0.85rem; outline: none; transition: 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'; localStorage.setItem('google_client_id', this.value); if(this.value) window.location.reload();">
+            </div>
+
+            <div style="display: grid; gap: 1rem;">
+                <button onclick="executeSync('push')" style="background: rgba(99,102,241,0.1); border: 1px solid var(--primary); padding: 1.2rem; border-radius: 16px; margin-top:0; color: white; cursor: pointer; text-align: left; transition: 0.2s;">
+                    <strong style="display: block; font-size: 1.1rem; color: var(--primary-light); margin-bottom: 4px;">⬆️ Timpa ke Cloud</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-dim);">Kirim data dari perangkat ini, timpa semua data di server Google.</span>
+                </button>
+                <button onclick="executeSync('pull')" style="background: rgba(244,63,94,0.1); border: 1px solid var(--accent); padding: 1.2rem; border-radius: 16px; margin-top:0; color: white; cursor: pointer; text-align: left; transition: 0.2s;">
+                    <strong style="display: block; font-size: 1.1rem; color: var(--accent); margin-bottom: 4px;">⬇️ Timpa ke Lokal</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-dim);">Tarik data dari Google, timpa data di perangkat ini. (Awas Data Hilang)</span>
+                </button>
+                <button onclick="executeSync('merge')" style="background: rgba(16,185,129,0.1); border: 1px solid #10b981; padding: 1.2rem; border-radius: 16px; margin-top:0; color: white; cursor: pointer; text-align: left; transition: 0.2s;">
+                    <strong style="display: block; font-size: 1.1rem; color: #34d399; margin-bottom: 4px;">🔄 Gabungkan Data</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-dim);">Tarik data baru dari Cloud, gabungkan ke perangkat, lalu unggah ulang.</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let editId = null;
+        let currentUserId = localStorage.getItem('current_user_id') || "";
+
+        function getCurrentUser() {
+            if (!currentUserId) return null;
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            return members.find(m => m.id == currentUserId) || null;
+        }
+
+        function getRole() {
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            if (members.length === 0) return 'superadmin'; // First user ever is superadmin
+            
+            const u = getCurrentUser();
+            if (!u) return 'guest';
+
+            if (u.role === 'superadmin') return 'superadmin';
+            
+            // Legacy Migration: Jika tidak ada satupun superadmin di data lama, orang pertama jadi superadmin
+            const hasSuperadmin = members.some(m => m.role === 'superadmin');
+            if (!hasSuperadmin && members[0] && u.id === members[0].id) {
+                return 'superadmin';
             }
-            (m.spouseIds || []).forEach(sid => { if (gen[sid] != null) g = g == null ? gen[sid] : g; });
-            if (g == null && !pids.length) g = 0;
-            if (g != null && gen[m.id] !== g) { gen[m.id] = g; changed = true; }
-          });
+
+            return u.role || 'client';
         }
-        members.forEach(m => { if (gen[m.id] == null) gen[m.id] = 0; });
 
-        // Normalize generations so min is 0
-        const minG = Math.min(...Object.values(gen));
-        members.forEach(m => gen[m.id] -= minG);
-
-        // 2. Horizontal Clustering & Ordering
-        const getB = (m) => {
-          if (!m || !m.birthDate) return '9999-12-31';
-          const d = U.pDate(m.birthDate);
-          return d ? d.toISOString().split('T')[0] : '9999-12-31';
-        };
-
-        const byGen = {};
-        members.forEach(m => (byGen[gen[m.id]] = byGen[gen[m.id]] || []).push(m.id));
-
-        // Group into Family Blocks per generation
-        const blocks = {};
-        Object.keys(byGen).forEach(g => {
-          const done = new Set();
-          blocks[g] = [];
-          byGen[g].forEach(id => {
-            if (done.has(id)) return;
-            const m = map[id];
-            const family = [id, ...(m.spouseIds || []).filter(sid => gen[sid] == g && !done.has(sid))];
-            family.forEach(f => done.add(f));
-            blocks[g].push(family);
-          });
-        });
-
-        const naturalOrder = [], traverseDone = new Set();
-        function traverse(id) {
-          if (traverseDone.has(id)) return;
-          const m = map[id]; if (!m) return;
-          const g = gen[id];
-          const block = (blocks[g] || []).find(b => b.includes(id)) || [id];
-          block.forEach(fid => { traverseDone.add(fid); naturalOrder.push(fid); });
-          const kids = members.filter(c => block.some(p => (c.parentIds || []).includes(p))).sort((a,b) => getB(a).localeCompare(getB(b)));
-          kids.forEach(k => traverse(k.id));
+        function setCurrentUser(idStr) {
+            localStorage.setItem('current_user_id', idStr);
+            currentUserId = idStr;
+            updateUserAuthUI();
         }
-        members.filter(m => (m.parentIds || []).length === 0).sort((a,b) => getB(a).localeCompare(getB(b))).forEach(r => traverse(r.id));
-        members.forEach(m => traverse(m.id));
 
-        const ordered = {};
-        Object.keys(blocks).forEach(g => {
-          ordered[g] = byGen[g].sort((a,b) => naturalOrder.indexOf(a) - naturalOrder.indexOf(b));
-          blocks[g].sort((a,b) => naturalOrder.indexOf(a[0]) - naturalOrder.indexOf(b[0]));
-        });
-
-        const pos = {};
-        const HG_SPOUSE = 10, HG_FAMILY = 60;
-        const resolve = (g) => {
-          const bRow = blocks[g]; if (!bRow || !bRow.length) return;
-          bRow.forEach(b => {
-            for (let i = 1; i < b.length; i++) pos[b[i]].x = pos[b[i-1]].x + NW + HG_SPOUSE;
-          });
-          for (let i = 1; i < bRow.length; i++) {
-            const prevB = bRow[i-1], curB = bRow[i];
-            const minX = pos[prevB[prevB.length-1]].x + NW + HG_FAMILY;
-            if (pos[curB[0]].x < minX) {
-              const dx = minX - pos[curB[0]].x;
-              curB.forEach(id => pos[id].x += dx);
+        function updateUserAuthUI() {
+            const role = getRole();
+            const badge = document.getElementById('currentUserRoleBadge');
+            if (badge) {
+                badge.textContent = role.toUpperCase();
+                badge.style.background = role === 'superadmin' ? 'rgba(99,102,241,0.2)' : (role === 'admin' ? 'rgba(244,63,94,0.2)' : 'rgba(255,255,255,0.1)');
+                badge.style.color = role === 'superadmin' ? 'var(--primary-light)' : (role === 'admin' ? 'var(--accent)' : 'white');
             }
-          }
-        };
 
-        // Initialize positions by family clusters (Fix: ensures spouses start together)
-        Object.keys(blocks).forEach(g => {
-          let curX = 40;
-          blocks[g].forEach(b => {
-            b.forEach((id, i) => pos[id] = { x: curX + i * (NW + HG_SPOUSE), y: 60 + (+g) * (NH + VG) });
-            curX += b.length * NW + (b.length-1) * HG_SPOUSE + HG_FAMILY;
-          });
-        });
+            const syncBtn = document.getElementById('btnSyncCloud');
+            if (syncBtn) syncBtn.style.display = role === 'superadmin' ? 'inline-block' : 'none';
 
-        const maxG = Math.max(...Object.keys(byGen).map(Number));
-        for (let pass = 0; pass < 32; pass++) {
-          for (let g = maxG - 1; g >= 0; g--) {
-            (blocks[g] || []).forEach(b => {
-              const kids = members.filter(c => b.some(p => (c.parentIds || []).includes(p)) && pos[c.id]);
-              if (kids.length) {
-                const midX = kids.reduce((s, c) => s + pos[c.id].x + NW/2, 0) / kids.length;
-                const tw = b.length * NW + (b.length-1) * HG_SPOUSE;
-                let sx = midX - tw/2;
-                b.forEach((fid, i) => pos[fid].x = sx + i * (NW + HG_SPOUSE));
-              }
-            });
-            resolve(g);
-          }
-          for (let g = 1; g <= maxG; g++) {
-            (blocks[g] || []).forEach(b => {
-              const pIds = b.flatMap(id => (map[id].parentIds || []).filter(pid => pos[pid]));
-              if (pIds.length) {
-                const midX = pIds.reduce((s, pid) => s + pos[pid].x + NW/2, 0) / pIds.length;
-                const tw = b.length * NW + (b.length-1) * HG_SPOUSE;
-                let sx = midX - tw/2;
-                b.forEach((fid, i) => pos[fid].x = sx + i * (NW + HG_SPOUSE));
-              }
-            });
-            resolve(g);
-          }
+            const addBtn = document.getElementById('btnAddMember');
+            if (addBtn) addBtn.style.display = (role === 'superadmin' || role === 'admin') ? 'inline-block' : 'none';
+
+            if (document.getElementById('memberList')) renderMembers();
         }
-        const minX = Math.min(...Object.values(pos).map(p => p.x), 20);
-        if (minX < 20) Object.values(pos).forEach(p => p.x -= (minX - 20));
-        return pos;
-      }
 
-      function svgLines(members, pos) {
-        let s = '';
-        const couplesDone = new Set();
-        const LS = `fill="none" stroke="rgba(0,0,0,.15)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"`;
-        const DOT = (x, y) => `<circle cx="${x}" cy="${y}" r="3" fill="rgba(0,0,0,.15)"/>`;
+        function calculateAgeString(p) {
+            if (!p.dob) return '';
+            const birthDate = new Date(p.dob);
+            if (isNaN(birthDate)) return '';
+            
+            let isDeceased = p.status === 'deceased';
+            if (isDeceased && !p.dod) {
+                // If deceased but no death date is provided, we can't calculate age exactly
+                return '';
+            }
 
-        members.forEach(m => {
-          const mp = pos[m.id]; if (!mp) return;
+            let endDate = new Date();
+            if (isDeceased && p.dod) {
+                const deathDate = new Date(p.dod);
+                if (!isNaN(deathDate)) endDate = deathDate;
+            }
+            
+            let age = endDate.getFullYear() - birthDate.getFullYear();
+            const mDiff = endDate.getMonth() - birthDate.getMonth();
+            if (mDiff < 0 || (mDiff === 0 && endDate.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age >= 0 ? ` (${age} thn)` : '';
+        }
 
-          // 1. Spouse line (centered heart)
-          (m.spouseIds || []).forEach(sid => {
-            const skey = [m.id, sid].sort().join('-');
-            if (couplesDone.has(skey)) return;
-            const sp = pos[sid]; if (!sp || Math.abs(sp.y - mp.y) > 10) return;
-            couplesDone.add(skey);
-            const x1 = Math.min(mp.x + NW, sp.x + NW), x2 = Math.max(mp.x, sp.x);
-            if (x2 <= x1) return;
-            const wy = mp.y + NH / 2, midX = (x1 + x2) / 2;
-            s += `<line x1="${x1}" y1="${wy}" x2="${x2}" y2="${wy}" stroke="rgba(255,45,85,.35)" stroke-width="1.2" stroke-dasharray="3,2"/>`;
-            s += `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" 
-                transform="translate(${midX-4.5},${wy-4.5}) scale(0.38)" fill="#ff2d55"/>`;
-          });
+        function openSyncModal() {
+            const urlInput = document.getElementById('syncUrlInput');
+            if (urlInput) urlInput.value = localStorage.getItem('appscript_url') || '';
+            const gInput = document.getElementById('gClientIdInput');
+            if (gInput) gInput.value = localStorage.getItem('google_client_id') || '';
+            document.getElementById('syncModal').style.display = 'flex';
+        }
 
-          // 2. Children lines
-          const ch = members.filter(c => (c.parentIds || []).includes(m.id) && pos[c.id]);
-          if (!ch.length) return;
+        function handleCredentialResponse(response) {
+            try {
+                const token = response.credential;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const data = JSON.parse(jsonPayload);
+                
+                const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+                const m = members.find(x => x.email === data.email);
+                
+                document.getElementById('googleBtnContainer').style.display = 'none';
+                document.getElementById('googleProfileContainer').style.display = 'flex';
+                document.getElementById('gAvatar').src = data.picture;
+                document.getElementById('gName').textContent = data.name;
 
-          let srcX = mp.x + NW / 2, srcY = mp.y + NH;
-          const cop = (m.spouseIds || []).find(sid => {
-            const sp = pos[sid];
-            return sp && Math.abs(sp.y - mp.y) <= 10 && ch.some(c => (c.parentIds || []).includes(sid));
-          });
-          if (cop) {
-            if (m.id > cop) return; // Only draw from one parent in a couple
-            srcX = (mp.x + NW / 2 + pos[cop].x + NW / 2) / 2;
-            srcY = mp.y + NH / 2; // Vertical starts from spouse line center
-          }
+                if (m) {
+                    setCurrentUser(m.id);
+                    // disable the manual switch so they enforce this logic unless logged out
+                    document.getElementById('currentUserSelect').disabled = true;
+                    showToast('Berhasil login otomatis sebagai ' + m.name, 'success');
+                } else {
+                    document.getElementById('currentUserSelect').disabled = true;
+                    setCurrentUser('');
+                    showToast('Email ' + data.email + ' tidak ditemukan di pohon. Akses dibatasi.', 'error');
+                }
+            } catch(e) { console.error(e) }
+        }
 
-          const chYmin = Math.min(...ch.map(c => pos[c.id].y));
-          const midY = srcY + (chYmin - srcY) * 0.45; // Adjust control point for cubic bezier
+        function logoutGoogle() {
+            document.getElementById('googleProfileContainer').style.display = 'none';
+            document.getElementById('googleBtnContainer').style.display = 'block';
+            document.getElementById('currentUserSelect').disabled = false;
+            setCurrentUser('');
+            showToast('Logout dari Google berhasil.', 'info');
+        }
 
-          // Parent to Junction
-          s += `<path d="M ${srcX} ${srcY} V ${midY}" ${LS}/>`; // Use V for vertical line
-          // s += `<path d="M ${srcX} ${srcY} C ${srcX} ${srcY + (midY - srcY) * 0.5}, ${srcX} ${midY - (midY - srcY) * 0.5}, ${srcX} ${midY}" ${LS}/>`; // Cubic bezier attempt
-
-          ch.forEach(c => {
-            const cp = pos[c.id], destX = cp.x + NW / 2, destY = cp.y;
-            // Horizontal bar to child
-            s += `<path d="M ${srcX} ${midY} L ${destX} ${midY} L ${destX} ${destY}" ${LS}/>`;
-            s += DOT(destX, destY);
-          });
-        });
-        return s;
-      }
-      return { compute, svgLines, NW, NH };
-    })();
-
-    /* ═══════════════════════════════════════════
-       TREE
-    ═══════════════════════════════════════════ */
-    const Tree = (() => {
-      let tx = 40, ty = 40, sc = 1, panning = false, px0 = 0, py0 = 0, ld = 0;
-      const applyT = () => {
-        document.getElementById('tcanvas').style.transform = `translate(${tx}px,${ty}px) scale(${sc})`;
-      };
-
-      function render(rootId, trah) {
-        const allMs = DB.all();
-        let ms = allMs;
-
-        if (trah) {
-          const ids = new Set();
-          const map = {}; allMs.forEach(m => map[m.id] = m);
-          const filterTags = (Array.isArray(trah) ? trah : [trah]).map(t => t.toLowerCase());
-          const tagged = allMs.filter(m => (m.trah || []).some(t => filterTags.includes(t.toLowerCase())));
-
-          tagged.forEach(m => {
-            const family = [m.id, ...(m.spouseIds || []), ...(m.parentIds || [])];
-            family.forEach(fid => {
-              if (!map[fid]) return;
-              ids.add(fid);
-              (map[fid].spouseIds || []).forEach(sid => ids.add(sid));
-              const kids = allMs.filter(c => (c.parentIds || []).includes(fid));
-              kids.forEach(k => {
-                ids.add(k.id);
-                (k.spouseIds || []).forEach(sid => ids.add(sid));
-                const gkids = allMs.filter(gc => (gc.parentIds || []).includes(k.id));
-                gkids.forEach(gk => {
-                  ids.add(gk.id);
-                  (gk.spouseIds || []).forEach(sid => ids.add(sid));
+        window.initGoogleLogin = function() {
+            const clientId = localStorage.getItem('google_client_id');
+            if (!clientId) return;
+            
+            if (window.google && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback: handleCredentialResponse
                 });
-              });
+                google.accounts.id.renderButton(
+                    document.getElementById("googleBtnContainer"),
+                    { theme: "outline", size: "small", shape: "pill" }
+                );
+                document.getElementById('googleBtnContainer').style.display = 'block';
+            }
+        }
+
+        async function executeSync(strategy) {
+            let scriptUrl = document.getElementById('syncUrlInput').value.trim();
+            if (!scriptUrl) {
+                showToast('⚠️ Harap masukkan URL Apps Script terlebih dahulu di kolom atas!', 'error');
+                return;
+            }
+            
+            localStorage.setItem('appscript_url', scriptUrl);
+            document.getElementById('syncModal').style.display = 'none';
+
+            try {
+                showToast('🚀 Memulai Sinkronisasi Cloud...', 'info');
+                const btn = document.querySelector('button[onclick="openSyncModal()"]');
+                if (btn) btn.innerHTML = '<span style="margin-right:5px;">🔄</span> Syncing...';
+                
+                let localDataStr = localStorage.getItem('family_members') || '[]';
+                let localData = JSON.parse(localDataStr);
+                let cloudData = null;
+
+                if (strategy === 'pull' || strategy === 'merge') {
+                    // Action: LOAD
+                    const resLoad = await fetch(scriptUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'load' })
+                    });
+                    if (!resLoad.ok) throw new Error('Gagal menarik data dari server');
+                    const loadResult = await resLoad.json();
+                    cloudData = loadResult.data || [];
+                }
+
+                if (strategy === 'pull') {
+                    if (cloudData && cloudData.length > 0) {
+                        localStorage.setItem('family_members', JSON.stringify(cloudData));
+                        renderMembers();
+                        showToast('Data lokal berhasil ditimpa dengan data Cloud! ⬇️', 'success');
+                    } else {
+                        showToast('Data Cloud kosong, membatalkan Pull.', 'info');
+                    }
+                } 
+                else if (strategy === 'merge') {
+                    if (cloudData) {
+                        let mergedMap = new Map();
+                        // 1. Masukkan data lokal dulu
+                        localData.forEach(item => mergedMap.set(item.id, item));
+                        // 2. Timpa/tambahkan data hasil pull dari cloud
+                        cloudData.forEach(item => mergedMap.set(item.id, item)); 
+                        
+                        let mergedArray = Array.from(mergedMap.values());
+                        localStorage.setItem('family_members', JSON.stringify(mergedArray));
+                        renderMembers();
+                        
+                        // Action: SAVE (Push back the merged result)
+                        await fetch(scriptUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({ action: 'save', data: mergedArray, timestamp: new Date().toISOString() })
+                        });
+                        showToast('Data digabung dan sinkronisasi 2-arah selesai! 🔄', 'success');
+                    }
+                }
+                else if (strategy === 'push') {
+                    // Action: SAVE
+                    const resSave = await fetch(scriptUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'save', data: localData, timestamp: new Date().toISOString() })
+                    });
+                    if (resSave.ok) {
+                        showToast('Data lokal berhasil ditimpa ke Apps Script! ⬆️', 'success');
+                    } else {
+                        throw new Error('Gagal menyimpan ke server');
+                    }
+                }
+            } catch (e) {
+                console.error("Cloud Sync Error:", e);
+                showToast('Gagal sinkronisasi: Periksa URL atau koneksi', 'error');
+                if (confirm('Koneksi Google Apps Script bermasalah atau URL salah / tidak menangani parameter dengan benar.\n\nApakah Anda ingin MENGHAPUS pengaturan URL ini?')) {
+                    localStorage.removeItem('appscript_url');
+                }
+            } finally {
+                const btn = document.querySelector('button[onclick="openSyncModal()"]');
+                if (btn) btn.innerHTML = '<span style="margin-right:5px;">☁️</span> Sinkronisasi Cloud';
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'toastOut 0.4s forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        function openForm() {
+            editId = null;
+            form.reset();
+            document.getElementById('formTitle').textContent = 'Tambah Anggota';
+            deathDetailsGroup.style.display = 'none';
+            document.getElementById('formOverlay').style.display = 'block';
+        }
+
+        function closeForm() {
+            document.getElementById('formOverlay').style.display = 'none';
+        }
+
+        const form = document.getElementById('biodataForm');
+        // Global UI variable definitions (only once)
+        const biodataForm = document.getElementById('biodataForm');
+        const deathDetailsGroup = document.getElementById('deathDetailsGroup');
+        const lifeStatus = document.getElementById('lifeStatus');
+
+        lifeStatus.addEventListener('change', () => {
+            deathDetailsGroup.style.display = lifeStatus.value === 'deceased' ? 'grid' : 'none';
+        });
+
+        // Restore global functions for repeaters
+        // Auto-fill Logic Helper
+        function autoFillSpouse(name, fromPrefix) {
+            if (!name) return;
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            const person = members.find(m => m.name.toLowerCase() === name.toLowerCase());
+            
+            if (person && person.spouses && person.spouses.length > 0) {
+                const targetPrefix = fromPrefix === 'f' ? 'm' : 'f';
+                const targetListId = fromPrefix === 'f' ? 'motherList' : 'fatherList';
+                
+                // Get all inputs of target type
+                const targetInputs = document.querySelectorAll(`.${targetPrefix}-name`);
+                
+                // Fill the first empty one, or the very first one if all are empty
+                let filled = false;
+                for (let input of targetInputs) {
+                    if (!input.value.trim()) {
+                        input.value = person.spouses[0].name;
+                        filled = true;
+                        break;
+                    }
+                }
+                
+                if (filled) {
+                    showToast(`${targetPrefix === 'f' ? 'Ayah' : 'Ibu'} otomatis terisi dari data pasangan`, 'info');
+                }
+            }
+        }
+
+        window.addItem = function(containerId, prefix) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'repeater-item';
+            let options = '';
+            if (prefix === 's') {
+                options = `<select class="s-status" style="width: 120px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 4px;"><option value="current">Saat Ini</option><option value="former">Mantan</option><option value="deceased">Wafat</option></select>`;
+            }
+            div.innerHTML = `<input type="text" placeholder="Nama" class="${prefix}-name" ${prefix!=='tr'?'list="memberOptions"':''} style="flex:1;">${options}<button type="button" class="btn-remove" onclick="this.parentElement.remove();">×</button>`;
+            container.appendChild(div);
+
+            // Bind events for auto-fill on specific fields
+            if (prefix === 'f' || prefix === 'm') {
+                div.querySelector('input').addEventListener('blur', function(e) {
+                    autoFillSpouse(e.target.value.trim(), prefix);
+                });
+            }
+        }
+
+        // Global functions for modal actions
+        window.openForm = function() {
+            editId = null;
+            biodataForm.reset();
+            document.getElementById('formTitle').textContent = 'Tambah Anggota';
+            deathDetailsGroup.style.display = 'none';
+            document.getElementById('roleGroup').style.display = getRole() === 'superadmin' ? 'block' : 'none';
+            document.getElementById('userRole').value = 'client';
+            document.getElementById('formOverlay').style.display = 'block';
+        }
+
+        window.closeForm = function() {
+            document.getElementById('formOverlay').style.display = 'none';
+            showToast('Perubahan dibatalkan', 'info');
+        }
+
+        window.editMember = function(id) {
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            const m = members.find(x => x.id === id);
+            if (!m) return;
+
+            editId = id;
+            document.getElementById('formTitle').textContent = 'Ubah Profil';
+            document.getElementById('fullName').value = m.name || '';
+            document.querySelectorAll(`input[name="gender"][value="${m.gender}"]`).forEach(r => r.checked = true);
+            lifeStatus.value = m.status || 'alive';
+            deathDetailsGroup.style.display = m.status === 'deceased' ? 'grid' : 'none';
+            
+            document.getElementById('dob').value = m.dob || '';
+            document.getElementById('pob').value = m.pob || '';
+            document.getElementById('dod').value = m.dod || '';
+            document.getElementById('pod').value = m.pod || '';
+            document.getElementById('phone').value = m.phone || '';
+            document.getElementById('email').value = m.email || '';
+            document.getElementById('address').value = m.address || '';
+
+            // Handle repeaters
+            ['trahList', 'fatherList', 'motherList', 'spouseList'].forEach(id => {
+                const container = document.getElementById(id);
+                container.innerHTML = '';
+                const prefix = id === 'trahList' ? 'tr' : (id === 'fatherList' ? 'f' : (id === 'motherList' ? 'm' : 's'));
+                const data = id === 'trahList' ? m.trahs : (id === 'fatherList' ? m.fathers : (id === 'motherList' ? m.mothers : m.spouses));
+                
+                if (data && data.length) {
+                    data.forEach(val => {
+                        const name = typeof val === 'string' ? val : val.name;
+                        const status = val.status || 'current';
+                        const div = document.createElement('div');
+                        div.className = 'repeater-item';
+                        let options = '';
+                        if (prefix === 's') {
+                            options = `<select class="s-status" style="width: 120px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 4px;"><option value="current" ${status==='current'?'selected':''}>Saat Ini</option><option value="former" ${status==='former'?'selected':''}>Mantan</option><option value="deceased" ${status==='deceased'?'selected':''}>Wafat</option></select>`;
+                        }
+                        div.innerHTML = `<input type="text" value="${name}" class="${prefix}-name" style="flex:1;">${options}<button type="button" class="btn-remove" onclick="this.parentElement.remove();">×</button>`;
+                        container.appendChild(div);
+                    });
+                } else {
+                    window.addItem(id, prefix);
+                }
             });
-          });
-          ms = allMs.filter(m => ids.has(m.id));
-        } else if (rootId) {
-          const coreIds = new Set();
-          const map = {}; allMs.forEach(m => map[m.id] = m);
 
-          function addLineageUp(id) {
-            if (!id || coreIds.has(id)) return;
-            coreIds.add(id);
-            const m = map[id]; if (!m) return;
-            (m.spouseIds || []).forEach(sid => coreIds.add(sid));
-            (m.parentIds || []).forEach(pid => addLineageUp(pid));
-          }
-
-          function addLineageDown(id) {
-            const m = map[id]; if (!m) return;
-            coreIds.add(id);
-            (m.spouseIds || []).forEach(sid => coreIds.add(sid));
-            allMs.filter(c => (c.parentIds || []).includes(id)).forEach(c => addLineageDown(c.id));
-          }
-
-          addLineageUp(rootId);
-          addLineageDown(rootId);
-
-          const ancestors = [...coreIds];
-          ancestors.forEach(aid => {
-            const m = map[aid]; if (!m) return;
-            (m.parentIds || []).forEach(pid => {
-              allMs.filter(c => (c.parentIds || []).includes(pid)).forEach(sib => {
-                coreIds.add(sib.id);
-                (sib.spouseIds || []).forEach(sid => coreIds.add(sid));
-              });
-            });
-          });
-          ms = allMs.filter(m => coreIds.has(m.id));
+            document.getElementById('detailModal').style.display = 'none';
+            document.getElementById('formOverlay').style.display = 'block';
         }
 
-        const canvas = document.getElementById('tcanvas'), emp = document.getElementById('t-empty');
-        if (!ms.length) { canvas.style.visibility = 'hidden'; emp.style.display = 'flex'; return; }
-        canvas.style.visibility = 'visible'; emp.style.display = 'none';
-
-        const pos = Layout.compute(ms);
-        const { NW, NH } = Layout;
-        const xs = Object.values(pos).map(p => p.x), ys = Object.values(pos).map(p => p.y);
-        const maxX = (xs.length ? Math.max(...xs) : 0) + NW + 60, maxY = (ys.length ? Math.max(...ys) : 0) + NH + 60;
-
-        canvas.style.cssText = `position:absolute;top:0;left:0;width:${maxX}px;height:${maxY}px;transform-origin:0 0;will-change:transform`;
-        const svg = document.getElementById('tsvg');
-        svg.style.cssText = `position:absolute;top:0;left:0;width:${maxX}px;height:${maxY}px;pointer-events:none;overflow:visible`;
-        svg.setAttribute('width', maxX); svg.setAttribute('height', maxY);
-        svg.innerHTML = Layout.svgLines(ms, pos);
-
-        const nodes = document.getElementById('tnodes');
-        nodes.innerHTML = '';
-        const sel = App.selId;
-
-        ms.forEach(m => {
-          const p = pos[m.id]; if (!p) return;
-          const gc = m.gender === 'male' ? 'male' : m.gender === 'female' ? 'female' : 'other';
-          const div = document.createElement('div');
-          div.className = `pn ${gc}${sel === m.id ? ' sel' : ''}`;
-          div.style.cssText = `left:${p.x}px;top:${p.y}px`;
-          div.dataset.id = m.id;
-          div.onclick = () => Detail.show(m.id);
-          const avInner = m.photo ? `<img src="${m.photo}" alt="">` : `<svg viewBox="0 0 24 24" class="pav-i">${ICO.user}</svg>`;
-          div.innerHTML = `
-        <div class="pav">${avInner}</div>
-        <div class="pin">
-          <div class="pname">${U.esc(m.name || '—')}</div>
-          <div class="pdts">${U.yrs(m.birthDate, m.deathDate) || '&nbsp;'}</div>
-        </div>
-        <div class="pft"></div>`;
-          nodes.appendChild(div);
-        });
-        applyT();
-      }
-
-      function zoom(d) { sc = Math.min(3, Math.max(.18, sc + d)); applyT(); }
-      function reset() { tx = 40; ty = 40; sc = 1; applyT(); }
-      function focusOn(id) {
-        const pos = Layout.compute(DB.all()); const p = pos[id]; if (!p) return;
-        const vp = document.getElementById('tvp');
-        tx = vp.clientWidth / 2 - (p.x + Layout.NW / 2) * sc;
-        ty = vp.clientHeight / 2 - (p.y + Layout.NH / 2) * sc;
-        applyT();
-      }
-
-      function init() {
-        const vp = document.getElementById('tvp');
-        vp.addEventListener('mousedown', e => {
-          if (e.target.closest('.pn')) return;
-          panning = true; px0 = e.clientX - tx; py0 = e.clientY - ty; vp.classList.add('grab');
-        });
-        document.addEventListener('mousemove', e => { if (!panning) return; tx = e.clientX - px0; ty = e.clientY - py0; applyT(); });
-        document.addEventListener('mouseup', () => { panning = false; document.getElementById('tvp').classList.remove('grab'); });
-        vp.addEventListener('wheel', e => { e.preventDefault(); sc = Math.min(3, Math.max(.18, sc + (e.deltaY > 0 ? -.08 : .08))); applyT(); }, { passive: false });
-        vp.addEventListener('touchstart', e => {
-          if (e.target.closest('.pn')) return;
-          if (e.touches.length === 1) { panning = true; px0 = e.touches[0].clientX - tx; py0 = e.touches[0].clientY - ty; }
-          else { panning = false; ld = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }
-        }, { passive: true });
-        vp.addEventListener('touchmove', e => {
-          e.preventDefault();
-          if (e.touches.length === 1 && panning) { tx = e.touches[0].clientX - px0; ty = e.touches[0].clientY - py0; }
-          else if (e.touches.length === 2) { const nd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); sc = Math.min(3, Math.max(.18, sc * (nd / ld))); ld = nd; }
-          applyT();
-        }, { passive: false });
-        vp.addEventListener('touchend', () => { panning = false; });
-      }
-      return { render, zoom, reset, focusOn, init };
-    })();
-
-    /* ═══════════════════════════════════════════
-       UTILITIES
-    ═══════════════════════════════════════════ */
-    const U = {
-      initials(n) { return (n || '').split(' ').slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '?'; },
-      esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); },
-      pDate(s) {
-        if (!s) return null;
-        if (typeof s === 'object' && s instanceof Date) return s;
-        const d = new Date(s);
-        if (!isNaN(d)) return d;
-        // Handle YYYY-MM-DD or DD/MM/YYYY
-        const p = s.split(/[-/]/);
-        if (p.length === 3) {
-          if (p[0].length === 4) return new Date(p[0], p[1] - 1, p[2]);
-          return new Date(p[2], p[1] - 1, p[0]);
-        }
-        return null;
-      },
-      fmtDate(d) {
-        const dt = this.pDate(d);
-        if (!dt) return d || '';
-        return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-      },
-      yrs(b, dd) {
-        const bd = this.pDate(b), wd = this.pDate(dd);
-        const by = bd ? bd.getFullYear() : null;
-        const dy = wd ? wd.getFullYear() : null;
-        if (!by && !dy) return ''; if (by && dy) return `${by}–${dy}`; if (by) return `${by}–`; return `†${dy}`;
-      },
-      gLabel(g) { return g === 'male' ? 'Laki-laki' : g === 'female' ? 'Perempuan' : 'Lainnya'; },
-      avClass(g) { return g === 'male' ? 'avm' : g === 'female' ? 'avf' : 'avo'; },
-      avGrad(g) { return g === 'male' ? 'linear-gradient(135deg,#4facfe,#007AFF)' : g === 'female' ? 'linear-gradient(135deg,#fa7fb5,#FF2D55)' : 'linear-gradient(135deg,#a8edea,#44b1c8)'; },
-      toast(msg) {
-        const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-        clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2700);
-      },
-      cardHTML(m, fn) {
-        fn = fn || `Detail.show(${m.id})`;
-        const pids = (m.parentIds || []).map(p => DB.get(p)?.name).filter(Boolean);
-        const sub = [
-          U.yrs(m.birthDate, m.deathDate),
-          m.trah?.length ? `<div class="tags-wrap" style="padding:0;margin:0">${m.trah.map(t => `<span class="tag-chip" style="padding:1px 6px;margin:0">${U.esc(t)}</span>`).join('')}</div>` : '',
-          pids.length ? `Anak dari ${pids.join(' & ')}` : m.address ? `📍 ${m.address}` : m.phone ? `📞 ${m.phone}` : ''
-        ].filter(Boolean).join(' · ');
-        const avInner = m.photo ? `<img src="${m.photo}" alt="">` : `<svg viewBox="0 0 24 24" style="width:24px;height:24px;color:rgba(0,0,0,.15)">${ICO.user}</svg>`;
-        return `<div class="mc" onclick="${fn}">
-      <div class="mc-av ${U.avClass(m.gender)}">${avInner}</div>
-      <div class="mc-i">
-        <div class="mc-n">${U.esc(m.name || '—')}</div>
-        <div class="mc-s">${U.esc(sub) || '&nbsp;'}</div>
-      </div>
-      <span class="mc-a">›</span>
-    </div>`;
-      }
-    };
-
-    /* ═══════════════════════════════════════════
-       DETAIL SHEET
-    ═══════════════════════════════════════════ */
-    const Detail = {
-      show(id) {
-        App.selId = id;
-        const m = DB.get(id); if (!m) return;
-        document.querySelectorAll('.pn').forEach(n => n.classList.toggle('sel', +n.dataset.id === id));
-
-        const avStyle = m.photo ? '' : `style="background:${U.avGrad(m.gender)}"`;
-        const avInner = m.photo ? `<img src="${m.photo}" alt="">` : U.initials(m.name);
-
-        let h = `<div class="dhd">
-      <div class="dav" ${avStyle}>${avInner}</div>
-      <div class="ddi">
-        <div class="dname">${U.esc(m.name || '—')}</div>
-        <div class="dsub">${U.gLabel(m.gender)} · ${U.yrs(m.birthDate, m.deathDate) || 'Tahun tidak diketahui'}</div>
-      </div>
-    </div>
-    <div class="dacts btn-group">
-      <button class="da pr" onclick="App.openEdit(${id})"><svg viewBox="0 0 24 24">${ICO.edit}</svg> Edit</button>
-      <button class="da" onclick="Detail.goTree(${id},DB.get(${id}).trah)"><svg viewBox="0 0 24 24">${ICO.tree}</svg> Pohon</button>
-      ${m.phone ? `<a class="da" href="tel:${U.esc(m.phone)}"><svg viewBox="0 0 24 24">${ICO.phone}</svg> Tel</a>` : ''}
-      <button class="da rd" onclick="App.confirmDel(${id})"><svg viewBox="0 0 24 24">${ICO.trash}</svg> Hapus</button>
-    </div>`;
-        if (m.trah?.length) h = `<div class="tags-wrap" style="justify-content:center;margin-top:-8px;margin-bottom:12px">${m.trah.map(t => `<span class="tag-chip">${U.esc(t)}</span>`).join('')}</div>` + h;
-
-        // Personal info
-        const info = [];
-        if (m.birthDate || m.birthPlace) info.push(['Kelahiran', [m.birthDate ? U.fmtDate(m.birthDate) : '', m.birthPlace].filter(Boolean).join(', ')]);
-        if (m.deathDate || m.deathPlace) info.push(['Wafat', [m.deathDate ? U.fmtDate(m.deathDate) : '', m.deathPlace].filter(Boolean).join(', ')]);
-        if (m.phone) info.push(['Telepon', `<a class="dlink" href="tel:${U.esc(m.phone)}">${U.esc(m.phone)}</a>`]);
-        if (m.address) info.push(['Alamat', `<a class="dlink" href="https://maps.google.com/?q=${encodeURIComponent(m.address)}" target="_blank" rel="noopener">📍 ${U.esc(m.address)}</a>`]);
-        if (m.bio) info.push(['Catatan', U.esc(m.bio).replace(/\n/g, '<br>')]);
-        if (info.length) {
-          h += `<div class="dsec"><div class="dstl">Kelahiran & Wafat</div>
-        ${info.map(([l, v]) => `<div class="drow"><span class="dlbl">${l}</span><span class="dval">${v}</span></div>`).join('')}
-      </div>`;
+        window.deleteMember = function(id) {
+            if (confirm('Yakin ingin menghapus data ini?')) {
+                let members = JSON.parse(localStorage.getItem('family_members') || '[]');
+                members = members.filter(m => m.id !== id);
+                localStorage.setItem('family_members', JSON.stringify(members));
+                document.getElementById('detailModal').style.display = 'none';
+                renderMembers();
+                showToast('Data berhasil dihapus', 'error');
+            }
         }
 
-        // Relations
-        const pars = (m.parentIds || []).map(i => DB.get(i)).filter(Boolean);
-        const spouses = (m.spouseIds || []).map(i => DB.get(i)).filter(Boolean);
-        const getB = (x) => {
-          if (!x || !x.birthDate) return '9999-12-31';
-          const d = U.pDate(x.birthDate);
-          return d ? d.toISOString().split('T')[0] : '9999-12-31';
-        };
-        const kids = DB.children(id).sort((a,b) => getB(a).localeCompare(getB(b)));
-        const sibs = DB.siblings(id).sort((a,b) => getB(a).localeCompare(getB(b)));
-        [[`Orang Tua`, pars], [`Pasangan`, spouses], [`Anak`, kids], [`Saudara`, sibs]].forEach(([lbl, list]) => {
-          if (!list.length) return;
-          h += `<div class="dsec"><div class="dstl">${lbl}</div>`;
-          list.forEach(r => {
-            const rStyle = r.photo ? '' : `style="background:${U.avGrad(r.gender)}"`;
-            const rAv = r.photo ? `<img src="${r.photo}" alt="">` : U.initials(r.name);
-            h += `<div class="rr" onclick="Detail.show(${r.id})">
-          <div class="rrav" ${rStyle}>${rAv}</div>
-          <span class="rrn">${U.esc(r.name)}</span>
-          <span class="rry">${U.yrs(r.birthDate, r.deathDate)}</span>
-        </div>`;
-          });
-          h += `</div>`;
-        });
+        // Form Submit Handler
+        biodataForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('.btn-submit');
+            btn.textContent = 'Menyimpan...';
+            btn.disabled = true;
 
-        document.getElementById('dbody').innerHTML = h;
-        document.getElementById('dov').classList.add('open');
-      },
-      close() {
-        document.getElementById('dov').classList.remove('open');
-        App.selId = null;
-        document.querySelectorAll('.pn').forEach(n => n.classList.remove('sel'));
-      },
-      goTree(id, trah) {
-        this.close();
-        App.treeRootId = id;
-        App.treeTrah = trah || null;
-        App.setView('tree', document.querySelector('.nt[data-v="list"]')); // Map to List as the hub
-        setTimeout(() => {
-          document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-          document.getElementById('vw-tree').classList.add('active');
-          Tree.render(id, App.treeTrah);
-          Tree.focusOn(id);
-          App.selId = id;
-        }, 60);
-      }
-    };
-
-    /* ═══════════════════════════════════════════
-       FORM
-    ═══════════════════════════════════════════ */
-    const Form = (() => {
-      let editId = null, photo = null, curTags = [];
-
-      function relPicker(name, others, selIds, label) {
-        const sorted = [...others].sort((a, b) => {
-          const aS = (selIds || []).includes(a.id) ? 1 : 0;
-          const bS = (selIds || []).includes(b.id) ? 1 : 0;
-          return bS - aS || (a.name || '').localeCompare(b.name || '');
-        });
-        const listId = `rl-${name}`;
-        const items = sorted.map(x => {
-          const chk = (selIds || []).includes(x.id) ? 'checked' : '';
-          const yr = U.yrs(x.birthDate, x.deathDate);
-          return `<label class="ri" data-name="${U.esc((x.name || '').toLowerCase())}">
-        <input type="checkbox" name="${name}" value="${x.id}" ${chk} onchange="Form.updateSelLabel('${name}')">
-        <label>${U.esc(x.name)}</label>
-        <span class="ry">${yr}</span>
-      </label>`;
-        }).join('');
-        const selCount = (selIds || []).length;
-        return `<div class="fg">
-      <span class="flbl">${label}</span>
-      <div class="rpick">
-        <div class="rpick-sb">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input placeholder="Ketik nama untuk mencari…" oninput="Form.filterRel(this,'${listId}')">
-        </div>
-        <div class="rpick-list" id="${listId}">${items || `<div class="ri-empty">Tidak ada anggota lain</div>`}</div>
-      </div>
-      <div class="rpick-sel${selCount ? ' show' : ''}" id="rsel-${name}">${selCount ? `${selCount} dipilih` : ''}</div>
-    </div>`;
-      }
-
-      function open(id) {
-        editId = id || null;
-        photo = (id ? DB.get(id)?.photo : null) || null;
-        const m = id ? DB.get(id) : null;
-        const others = DB.all().filter(x => !id || x.id !== id);
-        document.getElementById('fttl').textContent = id ? 'Edit Anggota' : 'Tambah Anggota Baru';
-
-        const prev = photo ? `<img src="${photo}" alt="">` : `<svg viewBox="0 0 24 24" style="width:32px;height:32px;color:var(--t5)">${ICO.user}</svg>`;
-        document.getElementById('fbdy').innerHTML = `
-      <div class="fg">
-        <span class="flbl">Foto Profil</span>
-        <div class="phr">
-          <div class="phcircle" id="phcircle">${prev}</div>
-          <div class="phbtns">
-            <label class="phlbl" for="ph-input"><svg viewBox="0 0 24 24" style="width:16px;height:16px">${ICO.camera}</svg> Pilih Foto</label>
-            <input type="file" id="ph-input" accept="image/*" style="display:none">
-            ${photo ? `<span class="phrm" id="phrm"><svg viewBox="0 0 24 24" style="width:14px;height:14px">${ICO.close}</svg> Hapus Foto</span>` : ''}
-          </div>
-        </div>
-      </div>
-      <div class="fg">
-        <span class="flbl">Nama Lengkap *</span>
-        <input class="fi" id="f-name" type="text" value="${U.esc(m?.name || '')}" placeholder="Nama lengkap" autocomplete="off">
-      </div>
-      <div class="fg">
-        <span class="flbl">Jenis Kelamin</span>
-        <div class="fseg" id="f-gender-seg" data-sel="${m?.gender || 'male'}">
-          <button class="fseg-b${(!m || m.gender === 'male') ? ' active' : ''}" onclick="Form.setGender('male',this)"><svg viewBox="0 0 24 24">${ICO.male}</svg> Laki-laki</button>
-          <button class="fseg-b${m?.gender === 'female' ? ' active' : ''}" onclick="Form.setGender('female',this)"><svg viewBox="0 0 24 24">${ICO.female}</svg> Perempuan</button>
-          <input type="hidden" id="f-gender" value="${m?.gender || 'male'}">
-        </div>
-      </div>
-      <div class="fg">
-        <span class="flbl">Trah / Garis Keturunan</span>
-        <div class="tags-wrap" id="f-tags"></div>
-        <div style="display:flex;gap:6px">
-          <input class="fi" id="f-tag-in" type="text" placeholder="Tambah tag..." style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();Form.addTag(this.value);this.value=''}">
-          <button class="da" style="max-width:80px;height:42px" onclick="Form.addTag(document.getElementById('f-tag-in').value);document.getElementById('f-tag-in').value=''"><svg viewBox="0 0 24 24">${ICO.plus}</svg></button>
-        </div>
-        <div class="tags-wrap" id="f-tag-hints"></div>
-      </div>
-      <div class="fr2">
-        <div class="fg"><span class="flbl">Tgl Lahir</span><input class="fi" id="f-bd" type="date" value="${m?.birthDate || ''}"></div>
-        <div class="fg"><span class="flbl">Tempat Lahir</span><input class="fi" id="f-bp" type="text" value="${U.esc(m?.birthPlace || '')}" placeholder="Kota"></div>
-      </div>
-      <div class="fr2">
-        <div class="fg"><span class="flbl">Tgl Wafat</span><input class="fi" id="f-dd" type="date" value="${m?.deathDate || ''}"></div>
-        <div class="fg"><span class="flbl">Tempat Wafat</span><input class="fi" id="f-dp" type="text" value="${U.esc(m?.deathPlace || '')}" placeholder="Kota"></div>
-      </div>
-      <div class="fg">
-        <span class="flbl">Nomor Telepon</span>
-        <input class="fi" id="f-phone" type="tel" value="${U.esc(m?.phone || '')}" placeholder="+62 812 3456 7890">
-      </div>
-      <div class="fg">
-        <span class="flbl">Alamat / Lokasi Tinggal</span>
-        <input class="fi" id="f-addr" type="text" value="${U.esc(m?.address || '')}" placeholder="Jl. Contoh No.1, Kota (untuk Google Maps)">
-      </div>
-      ${others.length ? relPicker('parentIds', others, m?.parentIds, 'Orang Tua') : ''}
-      ${others.length ? relPicker('spouseIds', others, m?.spouseIds, 'Pasangan') : ''}
-      <div class="fg">
-        <span class="flbl">Catatan / Biografi</span>
-        <textarea class="ftx" id="f-bio" placeholder="Profesi, kisah hidup, pencapaian…">${U.esc(m?.bio || '')}</textarea>
-      </div>`;
-
-        // Connect photo input
-        const inp = document.getElementById('ph-input');
-        if (inp) {
-          inp.onchange = e => {
-            const f = e.target.files[0]; if (!f) return;
-            const img = new Image(), url = URL.createObjectURL(f);
-            img.onload = () => {
-              const MAX = 600, c = document.createElement('canvas');
-              let w = img.width, h = img.height;
-              if (w > h && w > MAX) { h = h * MAX / w; w = MAX; } else if (h > w && h > MAX) { w = w * MAX / h; h = MAX; } else if (w > MAX) { w = h = MAX; }
-              c.width = Math.round(w); c.height = Math.round(h);
-              c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-              photo = c.toDataURL('image/jpeg', .82);
-              URL.revokeObjectURL(url);
-              document.getElementById('phcircle').innerHTML = `<img src="${photo}" alt="">`;
-              if (!document.getElementById('phrm')) {
-                const span = document.createElement('span');
-                span.className = 'phrm'; span.id = 'phrm';
-                span.innerHTML = `<svg viewBox="0 0 24 24" style="width:14px;height:14px">${ICO.close}</svg> Hapus Foto`;
-                span.onclick = Form.removePhoto;
-                document.getElementById('phcircle').nextElementSibling.appendChild(span);
-              }
+            const name = document.getElementById('fullName').value.trim();
+            const newData = {
+                id: editId !== null ? editId : Date.now(),
+                name: name,
+                gender: document.querySelector('input[name="gender"]:checked').value,
+                status: lifeStatus.value,
+                dob: document.getElementById('dob').value || null,
+                pob: document.getElementById('pob').value.trim(),
+                dod: document.getElementById('dod').value || null,
+                pod: document.getElementById('pod').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                trahs: Array.from(document.querySelectorAll('.tr-name')).map(el => el.value.trim()).filter(Boolean),
+                fathers: Array.from(document.querySelectorAll('.f-name')).map(el => ({ name: el.value.trim() })).filter(x => x.name),
+                mothers: Array.from(document.querySelectorAll('.m-name')).map(el => ({ name: el.value.trim() })).filter(x => x.name),
+                spouses: Array.from(document.querySelectorAll('.s-name')).map((el, i) => ({ 
+                    name: el.value.trim(), 
+                    status: document.querySelectorAll('.s-status')[i]?.value 
+                })).filter(x => x.name)
             };
-            img.src = url;
-          };
-        }
-        if (document.getElementById('phrm')) document.getElementById('phrm').onclick = Form.removePhoto;
 
-        curTags = [...(m?.trah || [])];
-        renderTags();
-        document.getElementById('fmod').classList.add('open');
-        setTimeout(() => document.getElementById('f-name')?.focus(), 300);
-      }
+            let members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            
+            // Handle Roles
+            if (getRole() === 'superadmin') {
+                newData.role = document.getElementById('userRole').value;
+            } else if (editId !== null) {
+                const existing = members.find(x => x.id === editId);
+                newData.role = existing ? (existing.role || 'client') : 'client';
+            } else {
+                newData.role = members.length === 0 ? 'superadmin' : 'client';
+            }
 
-      function close() {
-        document.getElementById('fmod').classList.remove('open');
-        editId = null; photo = null;
-      }
+            // Bidirectional Spouse Logic
+            if (editId !== null) {
+                const oldIdx = members.findIndex(m => m.id === editId);
+                const oldName = oldIdx !== -1 ? members[oldIdx].name : null;
+                // Remove old links
+                if (oldName) {
+                    members.forEach(m => {
+                        if (m.spouses) m.spouses = m.spouses.filter(s => s.name !== oldName);
+                    });
+                }
+                if (oldIdx !== -1) members[oldIdx] = newData;
+            } else {
+                members.push(newData);
+            }
 
-      function renderTags() {
-        const wrap = document.getElementById('f-tags');
-        if (!wrap) return;
-        wrap.innerHTML = curTags.map((t, i) => `<span class="tag-c">${U.esc(t)} <span class="tag-del" onclick="Form.remTag(${i})">✕</span></span>`).join('');
-        const allTags = new Set();
-        DB.all().forEach(m => (m.trah || []).forEach(t => allTags.add(t)));
-        const hints = document.getElementById('f-tag-hints');
-        if (hints) hints.innerHTML = [...allTags].filter(t => !curTags.includes(t)).map(t => `<span class="tag-pick" onclick="Form.addTag('${U.esc(t)}')">+ ${U.esc(t)}</span>`).join('');
-      }
-
-      function addTag(v) {
-        v = v.trim(); if (!v || curTags.includes(v)) return;
-        curTags.push(v); renderTags();
-      }
-      function remTag(i) {
-        curTags.splice(i, 1); renderTags();
-      }
-
-      function filterRel(input, listId) {
-        const q = (input.value || '').toLowerCase().trim();
-        document.querySelectorAll(`#${listId} .ri`).forEach(el => {
-          el.style.display = (!q || el.dataset.name.includes(q)) ? '' : 'none';
-        });
-      }
-
-      function setGender(g, btn) {
-        document.getElementById('f-gender').value = g;
-        document.getElementById('f-gender-seg').dataset.sel = g;
-        document.querySelectorAll('.fseg-b').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      }
-
-      function removePhoto() {
-        photo = null;
-        document.getElementById('phcircle').innerHTML = `<svg viewBox="0 0 24 24" style="width:32px;height:32px;color:var(--t5)">${ICO.user}</svg>`;
-        const rm = document.getElementById('phrm'); if (rm) rm.remove();
-      }
-
-      function updateSelLabel(name) {
-        const cnt = document.querySelectorAll(`input[name="${name}"]:checked`).length;
-        const el = document.getElementById(`rsel-${name}`);
-        if (!el) return;
-        el.textContent = cnt ? `${cnt} dipilih` : '';
-        el.className = 'rpick-sel' + (cnt ? ' show' : '');
-      }
-
-      function save() {
-        const name = (document.getElementById('f-name')?.value || '').trim();
-        if (!name) { U.toast('⚠️ Nama tidak boleh kosong'); return; }
-        const chk = n => [...document.querySelectorAll(`input[name="${n}"]:checked`)].map(x => +x.value);
-        const attrs = {
-          name, gender: document.getElementById('f-gender').value,
-          birthDate: document.getElementById('f-bd').value,
-          birthPlace: (document.getElementById('f-bp')?.value || '').trim(),
-          deathDate: document.getElementById('f-dd').value,
-          deathPlace: (document.getElementById('f-dp')?.value || '').trim(),
-          phone: (document.getElementById('f-phone')?.value || '').trim(),
-          address: (document.getElementById('f-addr')?.value || '').trim(),
-          bio: (document.getElementById('f-bio')?.value || '').trim(),
-          trah: curTags, photo, parentIds: chk('parentIds'), spouseIds: chk('spouseIds')
-        };
-        if (editId) { DB.update(editId, attrs); U.toast('Data diperbarui'); }
-        else { DB.add(attrs); U.toast('Anggota ditambahkan'); }
-        close(); App.renderAll(); Sync.debounce();
-      }
-
-      return { open, close, save, filterRel, updateSelLabel, setGender, addTag, remTag, removePhoto };
-    })();
-
-    /* ═══════════════════════════════════════════
-       SYNC
-    ═══════════════════════════════════════════ */
-    const Sync = (() => {
-      const KEY = 'silsilah_gas_url', TKEY = 'silsilah_last_sync';
-      let timer = null;
-      const getUrl = () => localStorage.getItem(KEY) || '';
-      const getTime = () => localStorage.getItem(TKEY) || 'Belum pernah';
-      const saveUrl = v => { localStorage.setItem(KEY, v.trim()); setBadge(''); const el = document.getElementById('setup-gas-url'); if (el) el.value = v.trim(); };
-      function setBadge(state, label) {
-        const dot = document.getElementById('sdot'), txt = document.getElementById('stxt');
-        if (!dot || !txt) return;
-        dot.className = 'sdot' + (state ? ' ' + state : '');
-        txt.innerHTML = `<div>${label || (state === 'ok' ? 'Tersinkron' : state === 'syn' ? 'Sinkron…' : state === 'err' ? 'Gagal' : 'Lokal')}</div><div class="sync-time">${getTime()}</div>`;
-      }
-      function updateTime() { localStorage.setItem(TKEY, new Date().toLocaleString('id-ID')); }
-      async function run() {
-        const url = getUrl(); if (!url) { U.toast('Masukkan Apps Script URL di Pengaturan'); return; }
-        setBadge('syn');
-        try {
-          const res = await fetch(`${url}?action=getAll`, { cache: 'no-store' });
-          const j = await res.json();
-          if (!j.ok) throw new Error(j.error || 'Response not ok');
-          if (j.members && j.members.length) {
-            const cur = DB.raw(), localIds = new Set(cur.members.map(m => m.id));
-            j.members.forEach(m => { if (!localIds.has(m.id)) { cur.members.push(m); cur.nextId = Math.max(cur.nextId, (m.id || 0) + 1); } });
-            DB.replace(cur); updateTime(); App.renderAll();
-            U.toast(`✓ ${j.members.length} anggota dari Google Sheets`);
-          } else { U.toast('Sheet kosong — push data lokal terlebih dahulu'); }
-          setBadge('ok');
-        } catch (e) { setBadge('err'); U.toast('❌ Gagal: ' + (e.message || 'Cek URL')); }
-      }
-      async function push() {
-        const url = getUrl(); if (!url) { U.toast('Masukkan Apps Script URL di Pengaturan'); return; }
-        setBadge('syn', 'Kirim…');
-        try {
-          const members = DB.all().map(m => ({ ...m, photo: undefined }));
-          const res = await fetch(url, {
-            method: 'POST',
-            mode: 'cors',
-            body: JSON.stringify({ action: 'saveAll', members })
-          });
-          const j = await res.json();
-          if (!j.ok) throw new Error(j.error || 'Failed');
-          updateTime(); setBadge('ok'); U.toast(`✓ ${j.count} anggota dikirim ke Google Sheets`);
-        } catch (e) {
-          console.error('Sync.push error:', e);
-          setBadge('err');
-          U.toast('❌ Gagal kirim. Pastikan Apps Script sudah di-deploy sebagai "Anyone"');
-        }
-      }
-      function debounce() {
-        if (!getUrl()) return;
-        clearTimeout(timer); timer = setTimeout(() => push(), 4000);
-      }
-      function init() {
-        const el = document.getElementById('gas-url'); if (el) el.value = getUrl();
-        setBadge(getUrl() ? 'ok' : '', '');
-      }
-      return { run, push, debounce, saveUrl, getUrl, getTime, init };
-    })();
-
-    /* ═══════════════════════════════════════════
-       APP
-    ═══════════════════════════════════════════ */
-    const App = {
-      curView: 'list', selId: null, treeRootId: null, treeTrah: null,
-
-      checkSetup() {
-        if (!Sync.getUrl()) {
-          document.getElementById('setup-ov').classList.add('open');
-          return false;
-        }
-        return true;
-      },
-
-      async finishSetup() {
-        const url = Sync.getUrl();
-        if (!url) { U.toast('⚠️ Masukkan URL terlebih dahulu'); return; }
-        document.getElementById('setup-ov').classList.remove('open');
-        U.toast('Sedang sinkronisasi…');
-        await Sync.run();
-        this.renderAll();
-      },
-
-      setView(id, btn) {
-        if (id === 'add') { this.openAdd(); return; }
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('.nt').forEach(n => n.classList.remove('active'));
-        document.getElementById('vw-' + id).classList.add('active');
-        if (btn) btn.classList.add('active');
-        this.curView = id; setIcons(id);
-        if (id === 'tree') Tree.render(this.treeRootId, this.treeTrah);
-        else if (id === 'list') this.renderList();
-        else if (id === 'settings') { DB.uiInfo(); Sync.init(); }
-      },
-
-      renderList() {
-        const items = document.getElementById('litems');
-        const emp = document.getElementById('l-empty');
-        const cnt = document.getElementById('lcnt');
-        const q = (document.getElementById('list-sin')?.value || '').toLowerCase().trim();
-        let all = [...DB.all()].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'id'));
-
-        if (q) {
-          all = all.filter(m =>
-            (m.name || '').toLowerCase().includes(q) ||
-            (m.trah || []).some(t => t.toLowerCase().includes(q)) ||
-            (m.phone || '').replace(/\s/g, '').includes(q.replace(/\s/g, '')) ||
-            (m.birthPlace || '').toLowerCase().includes(q) ||
-            (m.deathPlace || '').toLowerCase().includes(q)
-          );
-        }
-
-        cnt.textContent = all.length;
-        if (!DB.all().length) { items.innerHTML = ''; items.style.display = 'none'; emp.style.display = 'flex'; return; }
-        items.style.display = 'flex'; emp.style.display = 'none';
-        items.innerHTML = all.length ? all.map(m => U.cardHTML(m)).join('') : `<div class="empty" style="padding:40px 0"><div class="es">Tidak ada hasil ditemukan</div></div>`;
-      },
-
-      doSearch(q) {
-        const res = document.getElementById('sres');
-        q = (q || '').trim().toLowerCase();
-        if (!q) {
-          res.innerHTML = `<div class="empty" style="padding:28px 0">
-            <div class="ei"><svg viewBox="0 0 24 24" style="width:40px;height:40px;opacity:.2">${ICO.info}</svg></div>
-            <div class="es">Ketik untuk mencari</div>
-          </div>`;
-          return;
-        }
-        const found = DB.all().filter(m =>
-          (m.name || '').toLowerCase().includes(q) ||
-          (m.birthPlace || '').toLowerCase().includes(q) ||
-          (m.deathPlace || '').toLowerCase().includes(q) ||
-          (m.address || '').toLowerCase().includes(q) ||
-          (m.phone || '').replace(/\s/g, '').includes(q.replace(/\s/g, '')) ||
-          (m.bio || '').toLowerCase().includes(q)
-        );
-        res.innerHTML = found.length ? found.map(m => U.cardHTML(m)).join('') :
-          `<div class="empty" style="padding:28px 0">
-            <div class="ei"><svg viewBox="0 0 24 24" style="width:40px;height:40px;opacity:.2">${ICO.info}</svg></div>
-            <div class="es">Anggota tidak ditemukan</div>
-          </div>`;
-      },
-
-      openAdd() { Detail.close(); Form.open(null); },
-      openEdit(id) { Detail.close(); Form.open(id); },
-
-      confirmDel(id) {
-        const m = DB.get(id); if (!m) return;
-        if (!confirm(`Hapus "${m.name}" dari silsilah?\nSemua relasi akan ikut dihapus.`)) return;
-        Detail.close(); DB.remove(id); this.renderAll(); U.toast(`${m.name} dihapus`); Sync.debounce();
-      },
-
-      renderAll() {
-        if (this.curView === 'tree') Tree.render(this.treeRootId, this.treeTrah);
-        else if (this.curView === 'list') this.renderList();
-      },
-
-      exportJSON() {
-        const j = JSON.stringify(DB.raw(), null, 2);
-        const a = Object.assign(document.createElement('a'), {
-          href: URL.createObjectURL(new Blob([j], { type: 'application/json' })),
-          download: `silsilah_${new Date().toISOString().split('T')[0]}.json`
-        });
-        a.click(); URL.revokeObjectURL(a.href); U.toast('📁 Data diekspor');
-      },
-
-      handleImport(e) {
-        const f = e.target.files[0]; if (!f) return;
-        const r = new FileReader();
-        r.onload = ev => {
-          try {
-            const imp = JSON.parse(ev.target.result);
-            if (!Array.isArray(imp.members)) throw new Error();
-            if (!confirm(`Impor ${imp.members.length} anggota? Data akan digabung.`)) return;
-            const cur = DB.raw(), idMap = {};
-            imp.members.forEach(m => { const oid = m.id; m.id = cur.nextId++; idMap[oid] = m.id; });
-            imp.members.forEach(m => {
-              m.parentIds = (m.parentIds || []).map(x => idMap[x] || x);
-              m.spouseIds = (m.spouseIds || []).map(x => idMap[x] || x);
-              cur.members.push(m);
+            // Logic for reciprocal links
+            newData.spouses.forEach(s => {
+                const sIdx = members.findIndex(m => m.name.toLowerCase() === s.name.toLowerCase());
+                if (sIdx !== -1) {
+                    if (!members[sIdx].spouses) members[sIdx].spouses = [];
+                    if (!members[sIdx].spouses.some(x => x.name.toLowerCase() === newData.name.toLowerCase())) {
+                        members[sIdx].spouses.push({ name: newData.name, status: s.status });
+                    }
+                }
             });
-            DB.save(); this.renderAll(); U.toast(`✓ ${imp.members.length} anggota diimpor`);
-          } catch (_) { U.toast('❌ Format file tidak valid'); }
-        };
-        r.readAsText(f); e.target.value = '';
-      },
 
-      clearAll() {
-        if (!confirm('Hapus SEMUA data silsilah?\nTindakan tidak dapat dibatalkan.')) return;
-        DB.replace({ members: [], nextId: 1 }); this.renderAll(); U.toast('Semua data dihapus');
-      }
-    };
+            localStorage.setItem('family_members', JSON.stringify(members));
+            
+            // Finalize UI
+            editId = null;
+            document.getElementById('formOverlay').style.display = 'none';
+            renderMembers();
+            showToast('Data berhasil diamankan!', 'success');
+            btn.textContent = 'Simpan Data';
+            btn.disabled = false;
+        });
 
-    /* ═══════════════════════════════════════════
-       PWA SETUP
-    ═══════════════════════════════════════════ */
-    function setupPWA() {
-      const manifest = {
-        name: 'Silsilah Keluarga', short_name: 'Silsilah', start_url: '.', display: 'standalone',
-        background_color: '#dce8ff', theme_color: '#dce8ff',
-        icons: [{
-          src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="44" fill="#007AFF"/><text x="16" y="158" font-size="144">🌳</text></svg>'),
-          sizes: '192x192', type: 'image/svg+xml'
-        }]
-      };
-      const ml = document.getElementById('pwa-manifest');
-      ml.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/json' }));
-      if ('serviceWorker' in navigator) {
-        try {
-          const sw = `const V='silsilah-v2';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))));});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.open(V).then(c=>c.match(e.request).then(r=>r||fetch(e.request))));});`;
-          navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], { type: 'application/javascript' }))).catch(() => { });
-        } catch (_) { }
-      }
-    }
+        function viewMember(id) {
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            const m = members.find(x => x.id === id);
+            if (!m) return;
+            
+            detailContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.5rem; border: 4px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.3); background: #1e293b; display: flex; align-items: center; justify-content: center;">
+                        ${m.photo ? `<img src="${m.photo}" style="width:100%; height:100%; object-fit:cover;">` : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`}
+                    </div>
+                    <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px;">${m.name}</h2>
+                    <div style="display: inline-block; padding: 4px 16px; border-radius: 100px; background: ${m.gender === 'male' ? 'rgba(99,102,241,0.1)' : 'rgba(244,63,94,0.1)'}; color: ${m.gender === 'male' ? 'var(--primary-light)' : 'var(--accent)'}; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.05);">
+                        ${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'}
+                    </div>
+                </div>
 
-    /* ═══════════════════════════════════════════
-       BOOT
-    ═══════════════════════════════════════════ */
-    DB.load();
-    setupPWA();
-    setIcons('list');
-    Sync.init();
-    if (App.checkSetup()) App.renderList();
-    Tree.init();
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 2.5rem; background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <button onclick="openTreeView('${m.name}')" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: none; color: var(--success); cursor: pointer; padding: 10px; border-radius: 12px; transition: 0.2s;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 .5-5"/><path d="M16 22l-.5-5"/></svg>
+                        <span style="font-size: 0.65rem; font-weight: 700;">TREE</span>
+                    </button>
+                    <button onclick="window.print()" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: none; color: #fff; cursor: pointer; padding: 10px; border-radius: 12px; transition: 0.2s; opacity: 0.6;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+                        <span style="font-size: 0.65rem; font-weight: 700;">PRINT</span>
+                    </button>
+                    ${(getRole() === 'superadmin' || getRole() === 'admin' || currentUserId == m.id) ? `
+                    <button onclick="editMember(${m.id})" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: none; color: var(--primary-light); cursor: pointer; padding: 10px; border-radius: 12px; transition: 0.2s;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                        <span style="font-size: 0.65rem; font-weight: 700;">EDIT</span>
+                    </button>` : ''}
+                    ${(getRole() === 'superadmin' || getRole() === 'admin') ? `
+                    <button onclick="deleteMember(${m.id})" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: none; color: var(--accent); cursor: pointer; padding: 10px; border-radius: 12px; transition: 0.2s;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                        <span style="font-size: 0.65rem; font-weight: 700;">DELETE</span>
+                    </button>` : ''}
+                </div>
 
-    // Seed data removed to prevent overwriting real data.
-  </script>
+                <div style="display: grid; gap: 1.5rem;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); display: grid; gap: 1.2rem;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--success);"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                            <div>
+                                <small style="color:var(--text-dim); text-transform: uppercase; font-weight: 700; font-size: 0.6rem; letter-spacing: 1px;">Kelahiran</small>
+                                <div style="font-size: 1rem; font-weight: 500;">${m.dob ? new Date(m.dob).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'}) + calculateAgeString(m) : 'Tidak Diketahui'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function populateRepeater(containerId, prefix, dataList, valueKey1, valueKey2, selectClass) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            const list = (dataList || []).filter(item => item && item[valueKey1] && item[valueKey1].trim() !== '');
+            if (list.length === 0) {
+                addItem(containerId, prefix);
+                return;
+            }
+            list.forEach(item => {
+                addItem(containerId, prefix);
+                const inputs = container.querySelectorAll(`.${prefix}-name`);
+                inputs[inputs.length - 1].value = item[valueKey1] || '';
+                const selects = container.querySelectorAll(`.${selectClass}`);
+                if(selects[selects.length - 1]) {
+                    selects[selects.length - 1].value = item[valueKey2] || '';
+                }
+            });
+        }
+
+        function editMember(id) {
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            const m = members.find(x => x.id === id);
+            if (!m) return;
+            
+            editId = id;
+            in_name.value = m.name;
+            document.querySelector(`input[name="gender"][value="${m.gender}"]`).checked = true;
+            in_dob.value = m.dob || '';
+            in_pob.value = m.pob || '';
+            lifeStatus.value = m.status;
+            deathDetailsGroup.style.display = m.status === 'deceased' ? 'grid' : 'none';
+            in_dod.value = m.dod || '';
+            in_pod.value = m.pod || '';
+            in_phone.value = m.phone || '';
+            in_email.value = m.email || '';
+            in_address.value = m.address || '';
+            document.getElementById('bio').value = m.bio || '';
+
+            if (m.photo) {
+                document.getElementById('iconPreview').innerHTML = `<img src="${m.photo}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                document.getElementById('uploadText').textContent = 'Foto Terpilih';
+            } else {
+                document.getElementById('iconPreview').innerHTML = '👤';
+                document.getElementById('uploadText').textContent = 'Klik untuk pasang foto anggota';
+            }
+            
+            populateRepeater('fatherList', 'f', m.fathers, 'name', 'type', 'f-type');
+            populateRepeater('motherList', 'm', m.mothers, 'name', 'type', 'm-type');
+            populateRepeater('spouseList', 's', m.spouses, 'name', 'status', 's-status');
+
+            // Populate Trah
+            const tContainer = document.getElementById('trahList');
+            tContainer.innerHTML = '';
+            if (m.trahs && m.trahs.length > 0) {
+                m.trahs.forEach(t => {
+                    addItem('trahList', 'tr');
+                    const inputs = tContainer.querySelectorAll('.tr-name');
+                    inputs[inputs.length - 1].value = t;
+                });
+            } else {
+                addItem('trahList', 'tr');
+            }
+            
+            document.getElementById('roleGroup').style.display = getRole() === 'superadmin' ? 'block' : 'none';
+            document.getElementById('userRole').value = m.role || 'client';
+            
+            document.getElementById('formTitle').textContent = 'Edit Profil Anggota';
+            form.querySelector('.btn-submit').textContent = 'Update Portfolio Keluarga';
+            document.getElementById('formOverlay').style.display = 'block';
+        }
+
+        function deleteMember(id) {
+            if (confirm('Hapus anggota ini dari silsilah keluarga?')) {
+                let members = JSON.parse(localStorage.getItem('family_members') || '[]');
+                members = members.filter(m => m.id !== id);
+                localStorage.setItem('family_members', JSON.stringify(members));
+                renderMembers();
+                if (document.getElementById('treeOverlay').style.display === 'flex') {
+                    initTree();
+                }
+            }
+        }
+
+        function renderMembers() {
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            const listContainer = document.getElementById('memberList');
+            const optionsContainer = document.getElementById('memberOptions');
+            const trahFilter = document.getElementById('filterTrah');
+
+            // Build current user options
+            const userSelect = document.getElementById('currentUserSelect');
+            if (userSelect && members.length > 0) {
+                userSelect.innerHTML = '<option value="">Guest (Tamu)</option>' + members.map(u => `<option value="${u.id}" ${currentUserId == u.id ? 'selected' : ''}>${u.name}</option>`).join('');
+            }
+
+            const isGoogleAuthActive = !!localStorage.getItem('google_client_id');
+            const isLoggedInViaGoogle = document.getElementById('googleProfileContainer').style.display === 'flex';
+
+            if (isGoogleAuthActive && !isLoggedInViaGoogle) {
+                document.getElementById('searchFilterContainer').style.display = 'none';
+                document.getElementById('memberListHeader').style.display = 'none';
+                listContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-dim); padding: 6rem 2rem; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(20px);">
+                        <div style="width: 100px; height: 100px; background: rgba(99,102,241,0.1); color: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; font-size: 3rem; box-shadow: 0 0 50px rgba(99,102,241,0.1);">🔒</div>
+                        <h2 style="color: white; font-size: 2.2rem; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1)); margin-bottom: 1rem; font-weight: 800;">Data Keluarga Terproteksi</h2>
+                        <p style="margin-bottom: 3rem; opacity: 0.7; max-width: 450px; margin-left: auto; margin-right: auto; line-height: 1.6; font-size: 1.05rem;">Silakan melakukan autentikasi menggunakan akun Google untuk mengakses database silsilah keluarga secara aman.</p>
+                        <div style="display: flex; justify-content: center; height: 50px;">
+                             <!-- The Google Login button in the header should be the primary button -->
+                             <p style="color:var(--primary-light); font-weight:700;">Gunakan tombol "Sign In with Google" di atas 🔝</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            } else {
+                document.getElementById('searchFilterContainer').style.display = 'flex';
+                document.getElementById('memberListHeader').style.display = 'flex';
+            }
+
+            // Auto-populate Trah Filter
+            const currentTrahSelection = trahFilter.value;
+            const allTrahs = [...new Set(members.flatMap(m => m.trahs || []))].sort();
+            trahFilter.innerHTML = '<option value="all">Semua Trah</option>' + 
+                allTrahs.map(t => `<option value="${t}">${t}</option>`).join('');
+            trahFilter.value = currentTrahSelection;
+
+            // Search & Filter Logic
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const genFilter = document.getElementById('filterGender').value;
+            const statFilter = document.getElementById('filterStatus').value;
+            const tFilter = trahFilter.value;
+
+            const filtered = members.filter(m => {
+                const bday = m.dob ? new Date(m.dob) : null;
+                const monthNames = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
+                const bdayStr = bday ? `${bday.getDate()} ${monthNames[bday.getMonth()]} ${bday.getFullYear()}`.toLowerCase() : "";
+                
+                const matchesSearch = 
+                    m.name.toLowerCase().includes(query) || 
+                    (m.trahs && m.trahs.some(t => t.toLowerCase().includes(query))) ||
+                    (m.email && m.email.toLowerCase().includes(query)) ||
+                    (m.address && m.address.toLowerCase().includes(query)) ||
+                    (m.phone && m.phone.includes(query)) ||
+                    (bdayStr.includes(query));
+                
+                const matchesGender = genFilter === 'all' || m.gender === genFilter;
+                const matchesStatus = statFilter === 'all' || m.status === statFilter;
+                const matchesTrah = tFilter === 'all' || (m.trahs && m.trahs.includes(tFilter));
+
+                return matchesSearch && matchesGender && matchesStatus && matchesTrah;
+            });
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-dim); padding: 4rem 2rem; background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed var(--card-border);"><h3>Data tidak ditemukan.</h3><p style="margin-top: 5px; opacity: 0.6;">${members.length === 0 ? 'Mulai isi form di atas.' : 'Coba ubah kata kunci pencarian atau filter Anda.'}</p></div>`;
+                optionsContainer.innerHTML = members.map(m => `<option value="${m.name}">`).join('');
+                return;
+            }
+
+            listContainer.innerHTML = filtered.map(m => `
+                <div class="member-card" onclick="viewMember(${m.id})" style="padding: 1.2rem; cursor: pointer; transition: all 0.3s ease;">
+                    <div style="display: flex; gap: 1.2rem; align-items: center;">
+                        <div style="width: 54px; height: 54px; border-radius: 50%; overflow: hidden; background: ${m.gender === 'male' ? 'rgba(99,102,241,0.1)' : 'rgba(244,63,94,0.1)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.05);">
+                            ${m.photo ? `<img src="${m.photo}" style="width:100%; height:100%; object-fit:cover;">` : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`}
+                        </div>
+                        <div style="overflow: hidden;">
+                            <div style="font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 2px;">${m.name}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-dim); font-weight: 500;">${m.dob ? new Date(m.dob).getFullYear() : 'Unknown'} ${calculateAgeString(m)}${m.status === 'deceased' ? ' — Wafat' : ''}</div>
+                            <div style="display:flex; gap:4px; margin-top:6px; flex-wrap:wrap;">
+                                ${m.trahs ? m.trahs.slice(0,2).map(t => {
+                                    const canViewTrah = getRole() === 'superadmin' || getRole() === 'admin' || currentUserId == m.id;
+                                    return canViewTrah 
+                                        ? `<small style="background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.4); padding:1px 6px; border-radius:4px; font-size:0.6rem; border:1px solid rgba(255,255,255,0.05);">${t}</small>` 
+                                        : `<small style="background:rgba(244,63,94,0.05); color:rgba(244,63,94,0.4); padding:1px 6px; border-radius:4px; font-size:0.6rem; border:1px dashed rgba(244,63,94,0.2);">🔒 Trah Rahasia</small>`;
+                                }).join('') : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            optionsContainer.innerHTML = members.map(m => `<option value="${m.name}">`).join('');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', renderMembers);
+        document.getElementById('filterGender').addEventListener('change', renderMembers);
+        document.getElementById('filterStatus').addEventListener('change', renderMembers);
+        document.getElementById('filterTrah').addEventListener('change', renderMembers);
+
+        // ==========================================
+        // TREE VISUALIZATION SYSTEM (D3.JS)
+        // ==========================================
+        let svg, g, zoom;
+        window.openTreeView = function(rootName) {
+            if (!rootName) return;
+            
+            // 1. Hide Other Modals
+            document.getElementById('detailModal').style.display = 'none';
+            document.getElementById('formOverlay').style.display = 'none';
+            
+            // 2. Show Overlay
+            const overlay = document.getElementById('treeOverlay');
+            overlay.style.display = 'block';
+            
+            showToast('Membangun silsilah...', 'info');
+            
+            // 3. Render Tree (Small Delay for DOM)
+            setTimeout(() => {
+                initTree(rootName);
+            }, 100);
+        }
+
+        window.closeTreeView = function() {
+            document.getElementById('treeOverlay').style.display = 'none';
+        }
+
+        function initTree(targetMemberName = null) {
+            const container = document.getElementById('treeCanvas');
+            if (!container) return;
+            container.innerHTML = ''; 
+
+            try {
+                const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+                if (members.length === 0 || !targetMemberName) {
+                    container.innerHTML = '<div style="height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.5; color: white;">Silakan pilih anggota keluarga dari daftar untuk melihat silsilah spesifik.</div>';
+                    return;
+                }
+
+                const memberMap = new Map();
+                members.forEach(m => memberMap.set(m.name, m));
+
+                const findUltimateRoot = (name, visited = new Set()) => {
+                    if (visited.has(name)) return name;
+                    visited.add(name);
+                    const p = memberMap.get(name);
+                    if (!p) return name;
+                    
+                    const pName = p.fathers?.find(f => memberMap.has(f.name))?.name || 
+                                  p.mothers?.find(m => memberMap.has(m.name))?.name;
+                    
+                    if (pName) return findUltimateRoot(pName, visited);
+                    return name;
+                };
+
+                const rootAncestorName = findUltimateRoot(targetMemberName);
+                if (!rootAncestorName) throw new Error("Akar keluarga tidak ditemukan.");
+
+                const processedUnits = new Set();
+                const buildFamilyUnit = (memberName) => {
+                    if (processedUnits.has(memberName)) return null;
+                    const person = memberMap.get(memberName);
+                    if (!person) return null;
+
+                    let spouse = null;
+                    if (person.spouses && person.spouses.length > 0) {
+                        for (const s of person.spouses) {
+                            if (memberMap.has(s.name) && !processedUnits.has(s.name)) {
+                                spouse = memberMap.get(s.name);
+                                break;
+                            }
+                        }
+                    }
+
+                    processedUnits.add(person.name);
+                    if (spouse) processedUnits.add(spouse.name);
+
+                    const children = members.filter(child => {
+                        const fatherMatch = child.fathers?.some(f => f.name === person.name || (spouse && f.name === spouse.name));
+                        const motherMatch = child.mothers?.some(m => m.name === person.name || (spouse && m.name === spouse.name));
+                        return fatherMatch || motherMatch;
+                    });
+
+                    children.sort((a, b) => {
+                        if (!a.dob) return 1;
+                        if (!b.dob) return -1;
+                        return new Date(a.dob) - new Date(b.dob);
+                    });
+
+                    return {
+                        name: person.name, person, spouse,
+                        children: children.map(c => buildFamilyUnit(c.name)).filter(Boolean)
+                    };
+                };
+
+                const hierarchyData = buildFamilyUnit(rootAncestorName);
+                if (!hierarchyData) throw new Error("Gagal menyusun hierarki unit keluarga.");
+
+                const width = container.clientWidth || window.innerWidth;
+                const height = container.clientHeight || window.innerHeight;
+
+                svg = d3.select("#treeCanvas").append("svg")
+                    .attr("width", "100%")
+                    .attr("height", "100%")
+                    .attr("viewBox", `0 0 ${width} ${height}`);
+
+                g = svg.append("g");
+
+                zoom = d3.zoom()
+                    .scaleExtent([0.1, 4])
+                    .on("zoom", (event) => g.attr("transform", event.transform));
+
+                svg.call(zoom);
+
+                const nodeW = 180;
+                const nodeH = 70;
+                const depthGap = 200; 
+
+                const treeLayout = d3.tree().nodeSize([450, depthGap]); 
+                const rootHierarchy = d3.hierarchy(hierarchyData);
+                treeLayout(rootHierarchy);
+
+                const displayLinks = rootHierarchy.links();
+                const displayNodes = rootHierarchy.descendants();
+
+                g.selectAll(".tree-link")
+                    .data(displayLinks)
+                    .enter().append("path")
+                    .attr("class", "tree-link")
+                    .attr("fill", "none")
+                    .attr("stroke", "rgba(148, 163, 184, 0.4)")
+                    .attr("stroke-width", 2)
+                    .attr("d", d => {
+                        let startX = d.source.x;
+                        let startY = d.source.y + nodeH/2;
+                        let endX = d.target.x;
+                        let endY = d.target.y - nodeH/2;
+                        const midY = (startY + endY) / 2;
+                        return `M${startX},${startY} V${midY} H${endX} V${endY}`;
+                    });
+
+                const familyNode = g.selectAll(".family-node")
+                    .data(displayNodes)
+                    .enter().append("g")
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+
+                const drawPerson = (selection, p, xOffset, isSpouse = false) => {
+                    const card = selection.append("g")
+                        .attr("transform", `translate(${xOffset},0)`)
+                        .style("cursor", "pointer")
+                        .on("click", (e) => {
+                            e.stopPropagation();
+                            viewMember(p.id);
+                        });
+
+                    card.append("rect")
+                        .attr("x", -nodeW/2)
+                        .attr("y", -nodeH/2)
+                        .attr("width", nodeW)
+                        .attr("height", nodeH)
+                        .attr("rx", 12)
+                        .attr("fill", "#1e293b")
+                        .attr("stroke", p.gender === 'male' ? 'var(--primary)' : 'var(--accent)')
+                        .attr("stroke-width", 2);
+
+                    const avatarGroup = card.append("g").attr("transform", `translate(${-nodeW/2 + 30}, 0)`);
+                    avatarGroup.append("circle").attr("r", 22).attr("fill", "#0f172a").attr("stroke", "white").attr("stroke-width", 1.5);
+                    
+                    if (p.photo) {
+                        const clipId = "clip-" + Math.random().toString(36).substr(2, 9);
+                        avatarGroup.append("defs").append("clipPath").attr("id", clipId).append("circle").attr("r", 22);
+                        avatarGroup.append("image")
+                            .attr("xlink:href", p.photo)
+                            .attr("x", -22).attr("y", -22).attr("width", 44).attr("height", 44)
+                            .attr("clip-path", `url(#${clipId})`);
+                    } else {
+                        avatarGroup.append("text").attr("y", 7).attr("text-anchor", "middle").attr("font-size", "18px").text("👤");
+                    }
+
+                    card.append("text")
+                        .attr("x", -nodeW/2 + 65)
+                        .attr("y", -5)
+                        .attr("fill", "white")
+                        .style("font-weight", "700").style("font-size", "11px")
+                        .text(p.name && p.name.length > 18 ? p.name.substring(0, 16) + "..." : (p.name || 'Unknown'));
+
+                    card.append("text")
+                        .attr("x", -nodeW/2 + 65)
+                        .attr("y", 15)
+                        .attr("fill", "#94a3b8").style("font-size", "10px")
+                        .text(`${p.dob ? new Date(p.dob).getFullYear() : '?'}${calculateAgeString(p)}${p.status === 'deceased' ? ' - \u2020' : ''}`);
+                };
+
+                familyNode.each(function(d) {
+                    const sel = d3.select(this);
+                    if (d.data.spouse) {
+                        drawPerson(sel, d.data.person, -(nodeW/2 + 10));
+                        drawPerson(sel, d.data.spouse, (nodeW/2 + 10));
+                        
+                        const status = d.data.person.spouses?.find(s => s.name === d.data.spouse.name)?.status || 'current';
+                        const isFormer = status === 'former';
+                        
+                        sel.append("line")
+                            .attr("x1", -(nodeW/2 + 10) + nodeW/2)
+                            .attr("y1", 0)
+                            .attr("x2", (nodeW/2 + 10) - nodeW/2)
+                            .attr("y2", 0)
+                            .attr("stroke", isFormer ? "#f43f5e" : "#fbbf24")
+                            .attr("stroke-width", 1.5)
+                            .attr("stroke-dasharray", isFormer ? "2,2" : "none")
+                            .attr("opacity", 0.6);
+
+                        const ringG = sel.append("g").attr("transform", "translate(0,0)");
+                        ringG.append("circle").attr("r", 12).attr("fill", "#0f172a").attr("stroke", isFormer ? "#f43f5e" : "#fbbf24").attr("stroke-width", 1.5);
+                        
+                        if (isFormer) {
+                            // X mark / Broken indicator using simple lines
+                            ringG.append("line").attr("x1", -4).attr("y1", -4).attr("x2", 4).attr("y2", 4).attr("stroke", "#f43f5e").attr("stroke-width", 1.5).attr("stroke-linecap", "round");
+                            ringG.append("line").attr("x1", -4).attr("y1", 4).attr("x2", 4).attr("y2", -4).attr("stroke", "#f43f5e").attr("stroke-width", 1.5).attr("stroke-linecap", "round");
+                        } else {
+                            // Outline interlocking rings using exact circles
+                            ringG.append("circle").attr("cx", -3).attr("cy", 0).attr("r", 3.5).attr("fill", "none").attr("stroke", "#fbbf24").attr("stroke-width", 1.2);
+                            ringG.append("circle").attr("cx", 3).attr("cy", 0).attr("r", 3.5).attr("fill", "none").attr("stroke", "#fbbf24").attr("stroke-width", 1.2);
+                        }
+                    } else {
+                        drawPerson(sel, d.data.person, 0);
+                    }
+                });
+
+                if (targetMemberName) {
+                    const targetNode = displayNodes.find(d => d.data.name === targetMemberName || (d.data.spouse && d.data.spouse.name === targetMemberName));
+                    if (targetNode) {
+                        svg.transition().duration(1000)
+                            .call(zoom.transform, d3.zoomIdentity.translate(width/2 - targetNode.x, 150).scale(0.9));
+                    } else { resetZoom(); }
+                } else { resetZoom(); }
+
+            } catch (err) {
+                console.error("D3 Error:", err);
+                container.innerHTML = `<div style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--accent); opacity: 0.8; font-weight: 600;">Gagal memvisualisasikan silsilah: ${err.message}</div>`;
+            }
+        }
+
+        function zoomIn() { if (svg && zoom) svg.transition().call(zoom.scaleBy, 1.3); }
+        function zoomOut() { if (svg && zoom) svg.transition().call(zoom.scaleBy, 0.7); }
+        
+        function resetZoom() {
+            if (!svg || !zoom) return;
+            const width = document.getElementById('treeCanvas').clientWidth || window.innerWidth;
+            svg.transition().duration(750)
+                .call(zoom.transform, d3.zoomIdentity.translate(width / 2, 80).scale(0.8));
+        }
+
+        updateUserAuthUI();
+    </script>
 </body>
-
 </html>
