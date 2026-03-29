@@ -1097,26 +1097,24 @@
                 mainBlobs.style.display = 'none';
                 document.getElementById('setupPrompt').style.display = 'block';
             } 
-            // Stage 2: Verification & Initial Sync (If logged in but no cloud link)
-            else if (isLoggedInGoogle && !hasAppScript && members.length > 0) {
-                // If they are logged in but have no cloud URL locally, show setup if they are an existing member
-                if (!user) {
-                    // Strict access: Logged in but not in members list
-                    authWall.style.display = 'flex';
-                    setupWall.style.display = 'none';
-                    app.style.display = 'none';
-                    authBlobs.style.display = 'flex';
-                    mainBlobs.style.display = 'none';
-                    document.getElementById('setupPrompt').style.display = 'none';
-                } else {
-                    authWall.style.display = 'none';
-                    setupWall.style.display = 'flex';
-                    app.style.display = 'none';
-                    authBlobs.style.display = 'flex';
-                    mainBlobs.style.display = 'none';
-                }
+            // Access Restricted (Email not found in members)
+            else if (isLoggedInGoogle && !user) {
+                authWall.style.display = 'flex';
+                setupWall.style.display = 'none';
+                app.style.display = 'none';
+                authBlobs.style.display = 'flex';
+                mainBlobs.style.display = 'none';
+                document.getElementById('setupPrompt').style.display = 'none';
             }
-            // Stage 3: Dashboard (Full Access)
+            // Stage 2: Verification & Initial Sync (Mandatory Only for First Superadmin on Fresh System)
+            else if (isLoggedInGoogle && !hasAppScript && members.length === 1 && user.role === 'superadmin') {
+                authWall.style.display = 'none';
+                setupWall.style.display = 'flex';
+                app.style.display = 'none';
+                authBlobs.style.display = 'flex';
+                mainBlobs.style.display = 'none';
+            }
+            // Stage 3: Dashboard (Full Access for authorized members)
             else {
                 authWall.style.display = 'none';
                 setupWall.style.display = 'none';
