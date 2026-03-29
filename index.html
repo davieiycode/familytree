@@ -606,6 +606,24 @@
             <div id="memberList" class="member-grid"></div>
         </section>
 
+        <!-- Auth Wall Overlay -->
+        <div id="authWall" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-gradient); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; backdrop-filter: blur(20px);">
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 40px; padding: 4rem 2rem; max-width: 500px; width: 100%; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);">
+                <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; box-shadow: 0 20px 40px rgba(99,102,241,0.3);">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 .5-5"/><path d="M16 22l-.5-5"/></svg>
+                </div>
+                <h1 style="color: white; font-size: 2.2rem; margin-bottom: 1rem; font-weight: 800; letter-spacing: -1.5px;">Family Tree</h1>
+                <p style="color: var(--text-dim); margin-bottom: 3rem; line-height: 1.6;">Silakan masuk untuk mengakses data keluarga secara aman.</p>
+                
+                <div id="googleAuthWallContainer" style="display: flex; justify-content: center; min-height: 50px;"></div>
+                
+                <div id="setupPrompt" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">Google Client ID belum dikonfigurasi.</p>
+                    <button onclick="openSyncModal()" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--card-border); padding: 0.8rem 1.5rem; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">⚙️ Setup Awal</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Form Modal Overlay -->
         <div id="formOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 6, 23, 0.95); z-index: 1500; overflow-y: auto; padding: 0; backdrop-filter: blur(15px);">
             <div style="max-width: 1200px; margin: 0 auto; min-height: 100vh; position: relative; padding: 1.5rem;">
@@ -657,17 +675,31 @@
                                         <label>Telepon</label>
                                         <input type="text" id="phone" placeholder="0812...">
                                     </div>
-                                    <div class="input-group">
-                                        <label>Jabatan Keluarga</label>
-                                        <input type="text" id="familyRole" placeholder="Contoh: Ketua Trah, Sesepuh...">
-                                    </div>
-                                    <div class="input-group" id="roleGroup" style="display:none; grid-column: 1 / -1;">
-                                        <label style="color:var(--primary-light);">Akses Sistem (Khusus Superadmin)</label>
-                                        <select id="userRole" style="background: rgba(99,102,241,0.1); border-color: var(--primary);">
-                                            <option value="client">Client (Terbatas pada data sendiri)</option>
-                                            <option value="admin">Admin (Edit semua data, tanpa akses URL sync)</option>
-                                            <option value="superadmin">Superadmin (Akses Penuh)</option>
-                                        </select>
+                                    <div class="input-group" id="roleGroup" style="grid-column: 1 / -1; display: none; background: rgba(99,102,241,0.05); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(99,102,241,0.2); margin-top: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.8rem;">
+                                            <span style="font-size: 1.2rem;">🛡️</span>
+                                            <label style="color:var(--primary-light); margin:0;">Hak Akses Sistem (Edisi Baru)</label>
+                                        </div>
+                                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1rem;">Tentukan tingkat izin untuk mengelola data pohon keluarga ini secara digital.</p>
+                                        <div class="radio-container" style="background: rgba(0,0,0,0.2);">
+                                            <div class="radio-option">
+                                                <input type="radio" name="sysRole" value="client" id="roleClient" checked>
+                                                <div class="radio-label">Client</div>
+                                            </div>
+                                            <div class="radio-option">
+                                                <input type="radio" name="sysRole" value="admin" id="roleAdmin">
+                                                <div class="radio-label">Admin</div>
+                                            </div>
+                                            <div class="radio-option">
+                                                <input type="radio" name="sysRole" value="superadmin" id="roleSuper">
+                                                <div class="radio-label">Superadmin</div>
+                                            </div>
+                                        </div>
+                                        <div style="margin-top: 10px; font-size: 0.65rem; color: var(--text-dim);">
+                                            • <b>Client:</b> Hanya lihat & edit data profil sendiri.<br>
+                                            • <b>Admin:</b> Bisa edit semua data, tidak bisa atur Sinkronisasi Cloud.<br>
+                                            • <b>Superadmin:</b> Akses penuh, termasuk atur Cloud & Role anggota lain.
+                                        </div>
                                     </div>
                                     <div class="input-group">
                                         <label>Email</label>
@@ -775,7 +807,7 @@
         </div>
     </div>
     <!-- Sync Modal -->
-    <div id="syncModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+    <div id="syncModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
         <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--card-border); border-radius: 24px; padding: 2.5rem; max-width: 450px; width: 90%; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
             <button onclick="document.getElementById('syncModal').style.display='none'" style="position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 50%; color: white; margin-top:0; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
             <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; text-align: center;">☁️ Sinkronisasi</h2>
@@ -856,6 +888,25 @@
 
             const addBtn = document.getElementById('btnAddMember');
             if (addBtn) addBtn.style.display = (role === 'superadmin' || role === 'admin') ? 'inline-block' : 'none';
+
+            // Auth Wall Management
+            const authWall = document.getElementById('authWall');
+            const app = document.querySelector('.app-container');
+            const hasCid = !!localStorage.getItem('google_client_id');
+            const isLoggedIn = document.getElementById('googleProfileContainer').style.display === 'flex';
+
+            if (hasCid && !isLoggedIn) {
+                authWall.style.display = 'flex';
+                app.style.display = 'none';
+                document.getElementById('setupPrompt').style.display = 'none';
+            } else if (!hasCid) {
+                authWall.style.display = 'flex';
+                app.style.display = 'none';
+                document.getElementById('setupPrompt').style.display = 'block';
+            } else {
+                authWall.style.display = 'none';
+                app.style.display = 'grid';
+            }
 
             if (document.getElementById('memberList')) renderMembers();
         }
@@ -942,11 +993,19 @@
                     client_id: clientId,
                     callback: handleCredentialResponse
                 });
+                
+                // Render in header
                 google.accounts.id.renderButton(
                     document.getElementById("googleBtnContainer"),
                     { theme: "outline", size: "small", shape: "pill" }
                 );
                 document.getElementById('googleBtnContainer').style.display = 'block';
+
+                // Render in Auth Wall
+                google.accounts.id.renderButton(
+                    document.getElementById("googleAuthWallContainer"),
+                    { theme: "filled_blue", size: "large", shape: "pill", width: 300 }
+                );
             }
         }
 
@@ -1125,8 +1184,9 @@
             biodataForm.reset();
             document.getElementById('formTitle').textContent = 'Tambah Anggota';
             deathDetailsGroup.style.display = 'none';
-            document.getElementById('roleGroup').style.display = getRole() === 'superadmin' ? 'block' : 'none';
-            document.getElementById('userRole').value = 'client';
+            const canManageRoles = getRole() === 'superadmin' || getRole() === 'admin';
+            document.getElementById('roleGroup').style.display = canManageRoles ? 'block' : 'none';
+            document.getElementById('roleClient').checked = true;
             document.getElementById('formOverlay').style.display = 'block';
         }
 
@@ -1154,7 +1214,11 @@
             document.getElementById('phone').value = m.phone || '';
             document.getElementById('email').value = m.email || '';
             document.getElementById('address').value = m.address || '';
-            document.getElementById('familyRole').value = m.familyRole || '';
+            
+            // Set radio Role
+            const rVal = m.role || 'client';
+            const rInput = document.querySelector(`input[name="sysRole"][value="${rVal}"]`);
+            if (rInput) rInput.checked = true;
 
             // Handle repeaters
             ['trahList', 'fatherList', 'motherList', 'spouseList'].forEach(id => {
@@ -1217,7 +1281,7 @@
                 email: document.getElementById('email').value.trim(),
                 address: document.getElementById('address').value.trim(),
                 trahs: Array.from(document.querySelectorAll('.tr-name')).map(el => el.value.trim()).filter(Boolean),
-                familyRole: document.getElementById('familyRole').value.trim(),
+                role: document.querySelector('input[name="sysRole"]:checked')?.value || 'client',
                 fathers: Array.from(document.querySelectorAll('.f-name')).map(el => ({ name: el.value.trim() })).filter(x => x.name),
                 mothers: Array.from(document.querySelectorAll('.m-name')).map(el => ({ name: el.value.trim() })).filter(x => x.name),
                 spouses: Array.from(document.querySelectorAll('.s-name')).map((el, i) => ({ 
@@ -1228,9 +1292,9 @@
 
             let members = JSON.parse(localStorage.getItem('family_members') || '[]');
             
-            // Handle Roles
-            if (getRole() === 'superadmin') {
-                newData.role = document.getElementById('userRole').value;
+            // Handle Roles (Maintain restriction but use the form value if authorized)
+            if (getRole() === 'superadmin' || getRole() === 'admin') {
+                // newData.role already set from radio above
             } else if (editId !== null) {
                 const existing = members.find(x => x.id === editId);
                 newData.role = existing ? (existing.role || 'client') : 'client';
@@ -1414,10 +1478,9 @@
                         <div style="overflow: hidden;">
                             <div style="font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 2px; display: flex; align-items: center; gap: 8px;">
                                 ${m.name}
-                                ${m.role && (m.role === 'superadmin' || m.role === 'admin') ? `<span title="Akses: ${m.role}" style="font-size: 0.6rem; color: ${m.role==='superadmin'?'#818cf8':'#f43f5e'};">★</span>` : ''}
+                                ${m.role && m.role !== 'client' ? `<span style="background:${m.role==='superadmin'?'rgba(99,102,241,0.2)':'rgba(244,63,94,0.1)'}; color:${m.role==='superadmin'?'var(--primary-light)':'var(--accent)'}; padding:1px 6px; border-radius:4px; font-size:0.55rem; font-weight:800; border:1px solid rgba(255,255,255,0.05); text-transform:uppercase; letter-spacing:0.5px;">${m.role}</span>` : ''}
                             </div>
                             <div style="font-size: 0.8rem; color: var(--text-dim); font-weight: 500;">
-                                ${m.familyRole ? `<span style="color: var(--primary-light);">${m.familyRole} • </span>` : ''}
                                 ${m.dob ? new Date(m.dob).getFullYear() : 'Unknown'} ${calculateAgeString(m)}${m.status === 'deceased' ? ' — Wafat' : ''}
                             </div>
                             <div style="display:flex; gap:4px; margin-top:6px; flex-wrap:wrap;">
