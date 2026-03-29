@@ -559,7 +559,7 @@
             </div>
             <h1 style="color: white; font-size: 2.8rem; margin-bottom: 0.8rem; font-weight: 900; letter-spacing: -2px; line-height: 1;">Digital Family <span style="color: var(--primary-light);">Heritage</span></h1>
             <p style="color: var(--text-dim); margin-bottom: 3.5rem; line-height: 1.6; font-size: 1.1rem; max-width: 320px; margin-left: auto; margin-right: auto;">Gerbang digital untuk melestarikan silsilah dan sejarah keluarga Anda.</p>
-            <div id="googleAuthWallContainer" style="display: flex; justify-content: center; min-height: 60px; transform: scale(1.1);"></div>
+            <div id="googleAuthWallContainer" style="display: flex; justify-content: center; min-height: 44px; margin-bottom: 2rem;"></div>
             <div id="setupPrompt" style="display: none; margin-top: 3rem; padding-top: 2.5rem; border-top: 1px solid rgba(255,255,255,0.08);">
                 <div style="background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.2); padding: 1rem; border-radius: 16px; margin-bottom: 1.5rem;">
                     <p style="font-size: 0.85rem; color: #fb7185; font-weight: 500;">⚠️ Client ID Google belum terkonfigurasi.</p>
@@ -1239,7 +1239,7 @@
                 // Render in Auth Wall
                 google.accounts.id.renderButton(
                     document.getElementById("googleAuthWallContainer"),
-                    { theme: "filled_blue", size: "large", shape: "pill", width: 300 }
+                    { theme: "filled_blue", size: "medium", shape: "pill" }
                 );
             }
         }
