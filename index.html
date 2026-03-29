@@ -940,7 +940,8 @@
         }
 
         function getCurrentUser() {
-            if (!currentUserId) return null;
+            const isLoggedInGoogle = document.getElementById('googleProfileContainer')?.style.display === 'flex';
+            if (!currentUserId || !isLoggedInGoogle) return null;
             const members = JSON.parse(localStorage.getItem('family_members') || '[]');
             return members.find(m => m.id == currentUserId) || null;
         }
