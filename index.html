@@ -939,6 +939,25 @@
             return cid;
         }
 
+        function getCurrentUser() {
+            if (!currentUserId) return null;
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            return members.find(m => m.id == currentUserId) || null;
+        }
+
+        function setCurrentUser(id) {
+            currentUserId = id;
+            localStorage.setItem('current_user_id', id);
+            const select = document.getElementById('currentUserSelect');
+            if (select) select.value = id;
+            updateUserAuthUI();
+        }
+
+        function getRole() {
+            const user = getCurrentUser();
+            return user ? (user.role || 'client') : 'guest';
+        }
+
         function logActivity(type, detail) {
             const user = getCurrentUser();
             const userName = user ? user.name : "System/Guest";
@@ -1208,6 +1227,7 @@
                     setCurrentUser('');
                     showToast('Email ' + data.email + ' tidak ditemukan di pohon. Akses dibatasi.', 'error');
                 }
+                updateUserAuthUI();
             } catch(e) { console.error(e) }
         }
 
