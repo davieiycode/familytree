@@ -1019,26 +1019,20 @@
             // 1. If no members exist, allow access (to create first member).
             // 2. If Google Client ID is set, MUST be logged in AND have a valid registered email.
             // 3. Otherwise, if not logged in, show auth wall.
-            if (members.length > 0) {
-                if (hasCid) {
-                    if (!isLoggedInGoogle || !user) {
-                        authWall.style.display = 'flex';
-                        app.style.display = 'none';
-                        document.getElementById('setupPrompt').style.display = 'none';
-                    } else {
-                        authWall.style.display = 'none';
-                        app.style.display = 'grid';
-                    }
-                } else {
-                    // Maintenance mode if no CID but members exist
+            if (hasCid) {
+                if (!isLoggedInGoogle || (!user && members.length > 0)) {
                     authWall.style.display = 'flex';
                     app.style.display = 'none';
-                    document.getElementById('setupPrompt').style.display = 'block';
+                    document.getElementById('setupPrompt').style.display = 'none';
+                } else {
+                    authWall.style.display = 'none';
+                    app.style.display = 'grid';
                 }
             } else {
-                // Initial setup: No members yet
-                authWall.style.display = 'none';
-                app.style.display = 'grid';
+                // If NO CID is configured, show maintenance setup prompt
+                authWall.style.display = 'flex';
+                app.style.display = 'none';
+                document.getElementById('setupPrompt').style.display = 'block';
             }
 
             if (document.getElementById('memberList')) renderMembers();
@@ -1102,6 +1096,24 @@
                     document.getElementById('currentUserSelect').disabled = true;
                     showToast('Berhasil login otomatis sebagai ' + m.name, 'success');
                     logActivity('LOGIN', `Masuk ke sistem`);
+                } else if (members.length === 0) {
+                    // AUTO-CREATE FIRST USER (Superadmin)
+                    const newUser = {
+                        id: Date.now(),
+                        name: data.name,
+                        email: data.email,
+                        photo: data.picture,
+                        gender: 'male', // Default, can be edited later
+                        status: 'alive',
+                        role: 'superadmin',
+                        trahs: ["Perintis Utama"]
+                    };
+                    members.push(newUser);
+                    localStorage.setItem('family_members', JSON.stringify(members));
+                    setCurrentUser(newUser.id);
+                    document.getElementById('currentUserSelect').disabled = true;
+                    showToast('Pohon Baru Terbentuk: ' + newUser.name + ' menjadi Superadmin pertama.', 'success');
+                    logActivity('SYSTEM', `Pohon keluarga diinisialisasi oleh ${newUser.name}`);
                 } else {
                     document.getElementById('currentUserSelect').disabled = true;
                     setCurrentUser('');
