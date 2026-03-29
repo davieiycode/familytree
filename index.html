@@ -1186,14 +1186,44 @@
 
         async function saveInitialSync() {
             const url = document.getElementById('initialSyncUrl').value.trim();
-            if (!url || !url.startsWith('https://script.google.com')) {
+            
+            // IF QR/DATA IS EMPTY: Direct to Dashboard as Superuser
+            if (!url) {
+                showToast('Mode Lokal: Masuk sebagai Superadmin 🛠️', 'info');
+                localStorage.setItem('appscript_url', 'OFFLINE');
+                
+                let members = JSON.parse(localStorage.getItem('family_members') || '[]');
+                let sAdmin = members.find(m => m.role === 'superadmin');
+                
+                if (!sAdmin) {
+                    sAdmin = {
+                        id: 'admin-' + Date.now(),
+                        name: 'Superadmin Local',
+                        username: 'admin',
+                        password: 'admin',
+                        role: 'superadmin',
+                        gender: 'male',
+                        trahs: [], spouses: [], fathers: [], mothers: []
+                    };
+                    members.push(sAdmin);
+                    localStorage.setItem('family_members', JSON.stringify(members));
+                }
+                
+                localStorage.setItem('manual_user_id', sAdmin.id);
+                setCurrentUser(sAdmin.id);
+                logActivity('BOOTSTRAP', 'Akses Superadmin Otomatis (QR Kosong)');
+                return;
+            }
+
+            if (!url.startsWith('https://script.google.com')) {
                 showToast('⚠️ Hubungkan URL Apps Script yang valid!', 'error');
                 return;
             }
-            localStorage.setItem('appscript_url', url);
-            showToast('✅ Cloud Terhubung! Menyiapkan database Anda...', 'success');
             
-            // Auto-Import Step
+            localStorage.setItem('appscript_url', url);
+            showToast('✅ Cloud Terhubung! Menyiapkan database...', 'success');
+            
+            // IF HAS CONTENT: Pull data then go to Login Page
             await executeSync('pull'); 
             updateUserAuthUI();
         }
