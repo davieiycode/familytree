@@ -559,7 +559,26 @@
             </div>
             <h1 style="color: white; font-size: 2.8rem; margin-bottom: 0.8rem; font-weight: 900; letter-spacing: -2px; line-height: 1;">Digital Family <span style="color: var(--primary-light);">Heritage</span></h1>
             <p style="color: var(--text-dim); margin-bottom: 3.5rem; line-height: 1.6; font-size: 1.1rem; max-width: 320px; margin-left: auto; margin-right: auto;">Gerbang digital untuk melestarikan silsilah dan sejarah keluarga Anda.</p>
-            <div id="googleAuthWallContainer" style="display: flex; justify-content: center; min-height: 44px; margin-bottom: 2rem;"></div>
+            <div id="manualLoginContainer" style="text-align: left; margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2rem;">
+                <div style="margin-bottom: 1.2rem;">
+                    <label style="display: block; font-size: 0.7rem; color: var(--primary-light); text-transform: uppercase; font-weight: 800; margin-bottom: 8px;">Username / Nama</label>
+                    <input type="text" id="loginUser" placeholder="Nama sesuai silsilah" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; color: white; outline: none;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.7rem; color: var(--primary-light); text-transform: uppercase; font-weight: 800; margin-bottom: 8px;">Password</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; color: white; outline: none;">
+                </div>
+                <button onclick="loginManual()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-bottom: 2rem;">Masuk Silsilah 🔒</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; opacity: 0.5;">
+                <div style="flex: 1; height: 1px; background: white;"></div>
+                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">Superadmin Only</span>
+                <div style="flex: 1; height: 1px; background: white;"></div>
+            </div>
+
+            <div id="googleAuthWallContainer" style="display: flex; justify-content: center; min-height: 44px; margin-bottom: 1rem;"></div>
+            <p style="font-size: 0.7rem; color: var(--text-dim);">Gunakan Google hanya untuk akun Superadmin</p>
             <div id="setupPrompt" style="display: none; margin-top: 3rem; padding-top: 2.5rem; border-top: 1px solid rgba(255,255,255,0.08);">
                 <div style="background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.2); padding: 1rem; border-radius: 16px; margin-bottom: 1.5rem;">
                     <p style="font-size: 0.85rem; color: #fb7185; font-weight: 500;">⚠️ Client ID Google belum terkonfigurasi.</p>
@@ -721,7 +740,26 @@
                                         <label>Telepon</label>
                                         <input type="text" id="phone" placeholder="0812...">
                                     </div>
-                                    <div class="input-group" id="roleGroup" style="grid-column: 1 / -1; display: none; background: rgba(99,102,241,0.05); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(99,102,241,0.2); margin-top: 1rem;">
+                                    <div class="input-group full-width" id="credentialSection" style="background: rgba(99,102,241,0.05); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(99,102,241,0.2); display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                        <div style="grid-column: 1/-1; display:flex; align-items:center; gap:8px; margin-bottom:0.5rem;">
+                                            <span style="font-size: 1.2rem;">🔑</span>
+                                            <label style="color:var(--primary-light); margin:0;">User Credentials</label>
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Username</label>
+                                            <input type="text" id="memberUser" placeholder="Untuk login manual">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Password</label>
+                                            <div style="display: flex; gap: 8px;">
+                                                <input type="text" id="memberPass" placeholder="Data rahasia" style="flex:1;">
+                                                <button type="button" onclick="generatePass()" style="background:var(--primary); border:none; color:white; padding: 0 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer;">AUTO</button>
+                                            </div>
+                                        </div>
+                                        <p style="grid-column: 1/-1; font-size: 0.65rem; color: var(--text-dim); margin:0;">Username dan password ini digunakan untuk login bagi peran Admin & Client.</p>
+                                    </div>
+
+                                    <div class="input-group full-width" id="roleGroup" style="display: none; background: rgba(99,102,241,0.05); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(99,102,241,0.2); margin-top: 1rem;">
                                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.8rem;">
                                             <span style="font-size: 1.2rem;">🛡️</span>
                                             <label style="color:var(--primary-light); margin:0;">Hak Akses Sistem (Edisi Baru)</label>
@@ -941,7 +979,13 @@
 
         function getCurrentUser() {
             const isLoggedInGoogle = document.getElementById('googleProfileContainer')?.style.display === 'flex';
-            if (!currentUserId || !isLoggedInGoogle) return null;
+            const manualId = localStorage.getItem('manual_user_id');
+            
+            if (!currentUserId) return null;
+            
+            // Validate based on session type
+            if (!isLoggedInGoogle && !manualId) return null;
+            
             const members = JSON.parse(localStorage.getItem('family_members') || '[]');
             return members.find(m => m.id == currentUserId) || null;
         }
@@ -1212,11 +1256,16 @@
                 document.getElementById('gName').textContent = data.name;
 
                 if (m) {
+                    if (m.role !== 'superadmin') {
+                        showToast('Aksen Google hanya untuk Superadmin. Gunakan Username/Password!', 'error');
+                        logoutGoogle();
+                        return;
+                    }
                     setCurrentUser(m.id);
                     // disable the manual switch so they enforce this logic unless logged out
                     document.getElementById('currentUserSelect').disabled = true;
-                    showToast('Berhasil login otomatis sebagai ' + m.name, 'success');
-                    logActivity('LOGIN', `Masuk ke sistem`);
+                    showToast('Superadmin ' + m.name + ' Teridentifikasi ✅', 'success');
+                    logActivity('LOGIN', `Superadmin Masuk`);
                 } else if (members.length === 0 && !hasAppScript) {
                     // System Bootstrap - Let them in as Guest and show the Setup prompt if they are an admin
                     setCurrentUser('');
@@ -1234,8 +1283,9 @@
             document.getElementById('googleProfileContainer').style.display = 'none';
             document.getElementById('googleBtnContainer').style.display = 'block';
             document.getElementById('currentUserSelect').disabled = false;
+            localStorage.removeItem('manual_user_id');
             setCurrentUser('');
-            showToast('Logout dari Google berhasil.', 'info');
+            showToast('Logout berhasil.', 'info');
         }
 
         window.initGoogleLogin = function() {
@@ -1420,6 +1470,43 @@
             }
         }
 
+        window.generatePass = function() {
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
+            let pass = "";
+            for (let i = 0; i < 8; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('memberPass').value = pass;
+            showToast('Password otomatis dibuat! ✨', 'success');
+        }
+
+        window.loginManual = function() {
+            const userVal = document.getElementById('loginUser').value.trim().toLowerCase();
+            const passVal = document.getElementById('loginPass').value;
+            
+            if (!userVal || !passVal) {
+                showToast('Masukkan Username & Password!', 'error');
+                return;
+            }
+
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            const member = members.find(m => 
+                (m.username && m.username.toLowerCase() === userVal) || 
+                (m.name && m.name.toLowerCase() === userVal)
+            );
+
+            if (member && member.password === passVal) {
+                if (member.role === 'superadmin') {
+                    showToast('Superadmin wajib login via Google! 🗝️', 'info');
+                    return;
+                }
+                localStorage.setItem('manual_user_id', member.id);
+                setCurrentUser(member.id);
+                showToast('Selamat Datang, ' + member.name, 'success');
+                logActivity('LOGIN', 'Masuk via Kredensial');
+            } else {
+                showToast('Username atau password salah!', 'error');
+            }
+        }
+
         // Global functions for modal actions
         window.openForm = function() {
             editId = null;
@@ -1492,6 +1579,10 @@
                 }
             });
 
+            // Set Credentials
+            document.getElementById('memberUser').value = m.username || '';
+            document.getElementById('memberPass').value = m.password || '';
+
             document.getElementById('detailModal').style.display = 'none';
             document.getElementById('formOverlay').style.display = 'block';
         }
@@ -1538,7 +1629,9 @@
                 spouses: Array.from(document.querySelectorAll('.s-name')).map((el, i) => ({ 
                     name: el.value.trim(), 
                     status: document.querySelectorAll('.s-status')[i]?.value 
-                })).filter(x => x.name)
+                })).filter(x => x.name),
+                username: document.getElementById('memberUser').value.trim(),
+                password: document.getElementById('memberPass').value.trim()
             };
 
             let members = JSON.parse(localStorage.getItem('family_members') || '[]');
