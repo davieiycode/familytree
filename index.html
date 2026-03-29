@@ -699,6 +699,7 @@
                 <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.1);"></div>
                 
                 <div id="userDisplay" style="display:flex; align-items:center; gap:8px;">
+                    <button id="btnEditSelf" onclick="editSelf()" style="background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); border-radius:6px; color:var(--primary-light); font-size:0.6rem; cursor:pointer; padding: 3px 8px;">Ubah Profil</button>
                     <button id="btnRefreshList" onclick="renderMembers(); showToast('Data Diperbarui', 'info')" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-size:0.6rem; cursor:pointer; padding: 3px 8px;">Refresh</button>
                     <button onclick="logoutManual()" style="background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.3); border-radius:6px; color:var(--accent); font-size:0.6rem; cursor:pointer; padding: 3px 8px;">Logout</button>
                 </div>
@@ -1336,6 +1337,15 @@
             location.reload();
         }
 
+        window.editSelf = function() {
+            const user = getCurrentUser();
+            if (user) {
+                editMember(user.id);
+            } else {
+                showToast('Gunakan akun untuk melihat profil!', 'error');
+            }
+        }
+
         window.logoutManual = function() {
             localStorage.removeItem('manual_user_id');
             setCurrentUser('');
@@ -1809,16 +1819,35 @@
                 newData.role = members.length === 0 ? 'superadmin' : 'client';
             }
 
-            // Bidirectional Spouse Logic
+            // Cascading Rename Logic
             if (editId !== null) {
                 const oldIdx = members.findIndex(m => m.id === editId);
                 const oldName = oldIdx !== -1 ? members[oldIdx].name : null;
-                // Remove old links
-                if (oldName) {
+                
+                // If name changed, update all references in other members
+                if (oldName && oldName !== newData.name) {
                     members.forEach(m => {
-                        if (m.spouses) m.spouses = m.spouses.filter(s => s.name !== oldName);
+                        // Update in Spouses
+                        if (m.spouses) {
+                            m.spouses.forEach(s => {
+                                if (s.name.toLowerCase() === oldName.toLowerCase()) s.name = newData.name;
+                            });
+                        }
+                        // Update in Fathers
+                        if (m.fathers) {
+                            m.fathers.forEach(f => {
+                                if (f.name.toLowerCase() === oldName.toLowerCase()) f.name = newData.name;
+                            });
+                        }
+                        // Update in Mothers
+                        if (m.mothers) {
+                            m.mothers.forEach(mo => {
+                                if (mo.name.toLowerCase() === oldName.toLowerCase()) mo.name = newData.name;
+                            });
+                        }
                     });
                 }
+                
                 if (oldIdx !== -1) members[oldIdx] = newData;
                 logActivity('EDIT', `Mengubah data: ${newData.name}`);
             } else {
