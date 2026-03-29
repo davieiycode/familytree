@@ -605,24 +605,25 @@
 
             <div id="memberList" class="member-grid"></div>
         </section>
+    </div>
 
-        <!-- Auth Wall Overlay -->
-        <div id="authWall" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-gradient); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; backdrop-filter: blur(20px);">
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 40px; padding: 4rem 2rem; max-width: 500px; width: 100%; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);">
-                <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; box-shadow: 0 20px 40px rgba(99,102,241,0.3);">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 .5-5"/><path d="M16 22l-.5-5"/></svg>
-                </div>
-                <h1 style="color: white; font-size: 2.2rem; margin-bottom: 1rem; font-weight: 800; letter-spacing: -1.5px;">Family Tree</h1>
-                <p style="color: var(--text-dim); margin-bottom: 3rem; line-height: 1.6;">Silakan masuk untuk mengakses data keluarga secara aman.</p>
-                
-                <div id="googleAuthWallContainer" style="display: flex; justify-content: center; min-height: 50px;"></div>
-                
-                <div id="setupPrompt" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">Google Client ID belum dikonfigurasi.</p>
-                    <button onclick="openSyncModal()" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--card-border); padding: 0.8rem 1.5rem; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">⚙️ Setup Awal</button>
-                </div>
+    <!-- Auth Wall Overlay -->
+    <div id="authWall" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-gradient); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; backdrop-filter: blur(20px);">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 40px; padding: 4rem 2rem; max-width: 500px; width: 100%; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);">
+            <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; box-shadow: 0 20px 40px rgba(99,102,241,0.3);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 .5-5"/><path d="M16 22l-.5-5"/></svg>
+            </div>
+            <h1 style="color: white; font-size: 2.2rem; margin-bottom: 1rem; font-weight: 800; letter-spacing: -1.5px;">Family Tree</h1>
+            <p style="color: var(--text-dim); margin-bottom: 3rem; line-height: 1.6;">Silakan masuk untuk mengakses data keluarga secara aman.</p>
+            
+            <div id="googleAuthWallContainer" style="display: flex; justify-content: center; min-height: 50px;"></div>
+            
+            <div id="setupPrompt" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">Google Client ID belum dikonfigurasi.</p>
+                <button onclick="openSyncModal()" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--card-border); padding: 0.8rem 1.5rem; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">⚙️ Setup Awal</button>
             </div>
         </div>
+    </div>
 
         <!-- Form Modal Overlay -->
         <div id="formOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 6, 23, 0.95); z-index: 1500; overflow-y: auto; padding: 0; backdrop-filter: blur(15px);">
