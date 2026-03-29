@@ -564,11 +564,13 @@
                     <label style="display: block; font-size: 0.7rem; color: var(--primary-light); text-transform: uppercase; font-weight: 800; margin-bottom: 8px;">Username / Nama</label>
                     <input type="text" id="loginUser" placeholder="Nama sesuai silsilah" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; color: white; outline: none;">
                 </div>
-                <div style="margin-bottom: 1.5rem;">
+                <div style="margin-bottom: 1.5rem; position: relative;">
                     <label style="display: block; font-size: 0.7rem; color: var(--primary-light); text-transform: uppercase; font-weight: 800; margin-bottom: 8px;">Password</label>
-                    <input type="password" id="loginPass" placeholder="••••••••" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; color: white; outline: none;">
+                    <input type="password" id="loginPass" placeholder="••••••••" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; color: white; outline: none; padding-right: 3.5rem;">
+                    <span onclick="togglePass('loginPass')" style="position: absolute; right: 1rem; top: 2.2rem; cursor: pointer; font-size: 1.2rem; opacity: 0.5;">👁️</span>
                 </div>
-                <button onclick="loginManual()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-bottom: 2rem;">Masuk Silsilah 🔒</button>
+                <button onclick="loginManual()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-bottom: 1rem;">Masuk Silsilah 🔒</button>
+                <button onclick="executeSync('pull')" style="width: 100%; background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.05); padding: 0.6rem; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.8rem; margin-bottom: 2rem;">🔄 Sinkronkan Data dari Cloud</button>
             </div>
 
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; opacity: 0.5;">
@@ -1484,6 +1486,11 @@
             for (let i = 0; i < 8; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
             document.getElementById('memberPass').value = pass;
             showToast('Password otomatis dibuat! ✨', 'success');
+        }
+
+        window.togglePass = function(id) {
+            const el = document.getElementById(id);
+            el.type = el.type === 'password' ? 'text' : 'password';
         }
 
         window.loginManual = function() {
