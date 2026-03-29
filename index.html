@@ -573,6 +573,9 @@
                     <button id="btnSyncCloud" onclick="openSyncModal()" class="btn-submit" style="margin-top: 0; padding: 0.8rem 1.5rem; font-size: 0.9rem; background: rgba(255,255,255,0.1); width: auto; color: white;">
                         <span style="margin-right:5px;">☁️</span> Sinkronisasi Cloud
                     </button>
+                    <button id="btnMonitor" onclick="openMonitorModal()" class="btn-submit" style="margin-top: 0; padding: 0.8rem 1.5rem; font-size: 0.9rem; background: rgba(99,102,241,0.15); border: 1px solid var(--primary-light); width: auto; color: var(--primary-light); display: none;">
+                        <span style="margin-right:5px;">📊</span> Monitoring & Analitik
+                    </button>
                     <button id="btnAddMember" onclick="openForm()" class="btn-submit" style="margin-top: 0; padding: 0.8rem 1.5rem; font-size: 0.9rem; background: var(--primary); width: auto;">
                         + Tambah Anggota
                     </button>
@@ -841,38 +844,149 @@
         </div>
     </div>
 
+    <!-- Monitoring & Analytics Modal -->
+    <div id="monitorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 10500; align-items: center; justify-content: center; backdrop-filter: blur(12px);">
+        <div style="background: rgba(15, 23, 42, 0.98); border: 1px solid var(--card-border); border-radius: 32px; padding: 2.5rem; max-width: 900px; width: 95%; position: relative; max-height: 85vh; overflow-y: auto; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.7);">
+            <button onclick="document.getElementById('monitorModal').style.display='none'" style="position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.1); border: none; width: 36px; height: 36px; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;"><span style="color:var(--primary-light);">🛡️</span> Dashboard Monitoring</h2>
+            <p style="color: var(--text-dim); margin-bottom: 2rem;">Pantau aktivitas pengguna dan analisis struktur data keluarga.</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
+                <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <small style="color:var(--primary-light); text-transform:uppercase; font-weight:700; font-size:0.6rem;">Total Populasi</small>
+                    <div id="statTotal" style="font-size: 2.2rem; font-weight: 800;">0</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <small style="color:var(--success); text-transform:uppercase; font-weight:700; font-size:0.6rem;">Rasio Gender (L/P)</small>
+                    <div id="statGender" style="font-size: 1.5rem; font-weight: 800; margin-top:0.5rem;">0 / 0</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <small style="color:var(--accent); text-transform:uppercase; font-weight:700; font-size:0.6rem;">Status Hidup/Wafat</small>
+                    <div id="statLife" style="font-size: 1.5rem; font-weight: 800; margin-top:0.5rem;">0 / 0</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+                <div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:8px;">📋 Log Aktivitas <button onclick="clearLogs()" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:0.7rem; font-weight:bold;">(Bersihkan)</button></h3>
+                    <div id="logContent" style="background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); height: 300px; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                        <!-- Logs will be here -->
+                    </div>
+                </div>
+                <div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">🏷️ Distribusi Trah</h3>
+                    <div id="trahChart" style="background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 1.2rem; height: 300px; overflow-y: auto;">
+                        <!-- Trah list will be here -->
+                    </div>
+                </div>
+            </div>
+        </div>
     <script>
+        // CONFIGURATION: Enter your Google Client ID here to skip manual setup.
+        const APP_CONFIG = {
+            googleClientId: "454611863216-5aeaass5e1l0uqos9amd98b32ebgouli.apps.googleusercontent.com" // Your personal Client ID
+        };
+
         let editId = null;
         let currentUserId = localStorage.getItem('current_user_id') || "";
 
-        function getCurrentUser() {
-            if (!currentUserId) return null;
-            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
-            return members.find(m => m.id == currentUserId) || null;
+        function getEffectiveClientId() {
+            const cid = (APP_CONFIG.googleClientId && APP_CONFIG.googleClientId !== "YOUR_GOOGLE_CLIENT_ID_HERE") 
+                ? APP_CONFIG.googleClientId 
+                : localStorage.getItem('google_client_id');
+            return cid;
         }
 
-        function getRole() {
-            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
-            if (members.length === 0) return 'superadmin'; // First user ever is superadmin
+        function logActivity(type, detail) {
+            const user = getCurrentUser();
+            const userName = user ? user.name : "System/Guest";
+            const logs = JSON.parse(localStorage.getItem('system_logs') || '[]');
+            const newLog = {
+                timestamp: new Date().toISOString(),
+                user: userName,
+                userId: currentUserId,
+                type: type, // LOGIN, ADD, EDIT, DELETE
+                detail: detail
+            };
+            logs.unshift(newLog); // Newest first
+            localStorage.setItem('system_logs', JSON.stringify(logs.slice(0, 100))); // Keep last 100
             
-            const u = getCurrentUser();
-            if (!u) return 'guest';
+            // If superadmin is watching, notify them
+            const role = getRole();
+            if (role === 'superadmin' && type !== 'LOGIN') {
+                showToast(`🔔 Aktivitas: ${userName} ${detail}`, 'info');
+            }
+        }
 
-            if (u.role === 'superadmin') return 'superadmin';
+        function clearLogs() {
+            if (confirm('Bersihkan semua log aktivitas?')) {
+                localStorage.setItem('system_logs', '[]');
+                renderLogs();
+            }
+        }
+
+        function renderLogs() {
+            const logs = JSON.parse(localStorage.getItem('system_logs') || '[]');
+            const container = document.getElementById('logContent');
+            if (!container) return;
             
-            // Legacy Migration: Jika tidak ada satupun superadmin di data lama, orang pertama jadi superadmin
-            const hasSuperadmin = members.some(m => m.role === 'superadmin');
-            if (!hasSuperadmin && members[0] && u.id === members[0].id) {
-                return 'superadmin';
+            if (logs.length === 0) {
+                container.innerHTML = '<div style="opacity:0.5; text-align:center; margin-top:20px;">Belum ada aktivitas tercatat.</div>';
+                return;
             }
 
-            return u.role || 'client';
+            container.innerHTML = logs.map(l => {
+                const date = new Date(l.timestamp).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+                let color = 'var(--primary-light)';
+                if (l.type === 'DELETE') color = 'var(--accent)';
+                if (l.type === 'ADD') color = 'var(--success)';
+                
+                return `
+                    <div style="font-size: 0.8rem; border-left: 2px solid ${color}; padding-left: 10px; margin-bottom: 5px;">
+                        <span style="color:var(--text-dim); font-size: 0.7rem;">[${date}]</span> 
+                        <b style="color:${color}">${l.user}</b>: ${l.detail}
+                    </div>
+                `;
+            }).join('');
         }
 
-        function setCurrentUser(idStr) {
-            localStorage.setItem('current_user_id', idStr);
-            currentUserId = idStr;
-            updateUserAuthUI();
+        function openMonitorModal() {
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
+            
+            // Stats
+            document.getElementById('statTotal').textContent = members.length;
+            
+            const males = members.filter(m => m.gender === 'male').length;
+            const females = members.filter(m => m.gender === 'female').length;
+            document.getElementById('statGender').textContent = `${males} L / ${females} P`;
+            
+            const alive = members.filter(m => m.status === 'alive').length;
+            const deceased = members.filter(m => m.status === 'deceased').length;
+            document.getElementById('statLife').textContent = `${alive} H / ${deceased} W`;
+            
+            // Trah Distribution
+            const trahMap = {};
+            members.forEach(m => {
+                (m.trahs || []).forEach(t => {
+                    trahMap[t] = (trahMap[t] || 0) + 1;
+                });
+            });
+            
+            const sortedTrahs = Object.entries(trahMap).sort((a,b) => b[1] - a[1]);
+            document.getElementById('trahChart').innerHTML = sortedTrahs.map(([name, count]) => `
+                <div style="margin-bottom: 12px;">
+                    <div style="display:flex; justify-content:space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                        <span>${name}</span>
+                        <b style="color:var(--primary-light)">${count} orang</b>
+                    </div>
+                    <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
+                        <div style="width:${(count/members.length)*100}%; height:100%; background:var(--primary); box-shadow: 0 0 10px var(--primary-glow);"></div>
+                    </div>
+                </div>
+            `).join('') || '<div style="opacity:0.5; font-size:0.8rem; text-align:center;">Tidak ada data trah.</div>';
+
+            renderLogs();
+            document.getElementById('monitorModal').style.display = 'flex';
         }
 
         function updateUserAuthUI() {
@@ -890,21 +1004,39 @@
             const addBtn = document.getElementById('btnAddMember');
             if (addBtn) addBtn.style.display = (role === 'superadmin' || role === 'admin') ? 'inline-block' : 'none';
 
+            const monitorBtn = document.getElementById('btnMonitor');
+            if (monitorBtn) monitorBtn.style.display = role === 'superadmin' ? 'inline-block' : 'none';
+
             // Auth Wall Management
             const authWall = document.getElementById('authWall');
             const app = document.querySelector('.app-container');
-            const hasCid = !!localStorage.getItem('google_client_id');
-            const isLoggedIn = document.getElementById('googleProfileContainer').style.display === 'flex';
+            const hasCid = !!getEffectiveClientId();
+            const isLoggedInGoogle = document.getElementById('googleProfileContainer').style.display === 'flex';
+            const user = getCurrentUser();
+            const members = JSON.parse(localStorage.getItem('family_members') || '[]');
 
-            if (hasCid && !isLoggedIn) {
-                authWall.style.display = 'flex';
-                app.style.display = 'none';
-                document.getElementById('setupPrompt').style.display = 'none';
-            } else if (!hasCid) {
-                authWall.style.display = 'flex';
-                app.style.display = 'none';
-                document.getElementById('setupPrompt').style.display = 'block';
+            // Strict Access Rule: 
+            // 1. If no members exist, allow access (to create first member).
+            // 2. If Google Client ID is set, MUST be logged in AND have a valid registered email.
+            // 3. Otherwise, if not logged in, show auth wall.
+            if (members.length > 0) {
+                if (hasCid) {
+                    if (!isLoggedInGoogle || !user) {
+                        authWall.style.display = 'flex';
+                        app.style.display = 'none';
+                        document.getElementById('setupPrompt').style.display = 'none';
+                    } else {
+                        authWall.style.display = 'none';
+                        app.style.display = 'grid';
+                    }
+                } else {
+                    // Maintenance mode if no CID but members exist
+                    authWall.style.display = 'flex';
+                    app.style.display = 'none';
+                    document.getElementById('setupPrompt').style.display = 'block';
+                }
             } else {
+                // Initial setup: No members yet
                 authWall.style.display = 'none';
                 app.style.display = 'grid';
             }
@@ -942,7 +1074,7 @@
             const urlInput = document.getElementById('syncUrlInput');
             if (urlInput) urlInput.value = localStorage.getItem('appscript_url') || '';
             const gInput = document.getElementById('gClientIdInput');
-            if (gInput) gInput.value = localStorage.getItem('google_client_id') || '';
+            if (gInput) gInput.value = getEffectiveClientId() || '';
             document.getElementById('syncModal').style.display = 'flex';
         }
 
@@ -969,6 +1101,7 @@
                     // disable the manual switch so they enforce this logic unless logged out
                     document.getElementById('currentUserSelect').disabled = true;
                     showToast('Berhasil login otomatis sebagai ' + m.name, 'success');
+                    logActivity('LOGIN', `Masuk ke sistem`);
                 } else {
                     document.getElementById('currentUserSelect').disabled = true;
                     setCurrentUser('');
@@ -986,7 +1119,7 @@
         }
 
         window.initGoogleLogin = function() {
-            const clientId = localStorage.getItem('google_client_id');
+            const clientId = getEffectiveClientId();
             if (!clientId) return;
             
             if (window.google && google.accounts) {
@@ -1246,11 +1379,15 @@
         window.deleteMember = function(id) {
             if (confirm('Yakin ingin menghapus data ini?')) {
                 let members = JSON.parse(localStorage.getItem('family_members') || '[]');
+                const target = members.find(m => m.id === id);
+                const targetName = target ? target.name : "Unknown";
+                
                 members = members.filter(m => m.id !== id);
                 localStorage.setItem('family_members', JSON.stringify(members));
                 document.getElementById('detailModal').style.display = 'none';
                 renderMembers();
                 showToast('Data berhasil dihapus', 'error');
+                logActivity('DELETE', `Menghapus anggota: ${targetName}`);
             }
         }
 
@@ -1307,8 +1444,10 @@
                     });
                 }
                 if (oldIdx !== -1) members[oldIdx] = newData;
+                logActivity('EDIT', `Mengubah data: ${newData.name}`);
             } else {
                 members.push(newData);
+                logActivity('ADD', `Menambah anggota baru: ${newData.name}`);
             }
 
             // Logic for reciprocal links
@@ -1401,7 +1540,7 @@
                 userSelect.innerHTML = '<option value="">Guest (Tamu)</option>' + members.map(u => `<option value="${u.id}" ${currentUserId == u.id ? 'selected' : ''}>${u.name}</option>`).join('');
             }
 
-            const isGoogleAuthActive = !!localStorage.getItem('google_client_id');
+            const isGoogleAuthActive = !!getEffectiveClientId();
             const isLoggedInViaGoogle = document.getElementById('googleProfileContainer').style.display === 'flex';
 
             if (isGoogleAuthActive && !isLoggedInViaGoogle) {
